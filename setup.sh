@@ -19,7 +19,8 @@ sudo cat /etc/rc.local | grep -v 'exit 0' | grep -v '/webroot/' | sudo tee /etc/
 sudo rm /etc/rc.local
 sudo mv /etc/rc.local.tmp /etc/rc.local
 sudo bash -c 'cat >> /etc/rc.local' <<EOF
-su -l pi -c /hone/pi/neoclock/clock.sh >/tmp/clock.log 2>&1 &
+# su -l pi -c /hone/pi/neoclock/clock.sh >/tmp/clock.log 2>&1 &
+/hone/pi/neoclock/clock.sh >/tmp/clock.log 2>&1 &
 exit 0
 EOF
 sudo chmod 755 /etc/rc.local
