@@ -8,9 +8,10 @@ import math
 num_pixels=60
 pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
 bri=255
+toff=-25
 
 def drawPix(pcnt, w, mult):
-    sp = min(num_pixels, round(pcnt*num_pixels))
+    sp = (toff + min(num_pixels, round(pcnt*num_pixels))) % num_pixels
     lb = bri
     for i in range(w):
         #print(f"i:{i} lb:{lb}")
