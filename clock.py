@@ -24,11 +24,14 @@ def setPixel(n, mult, arr):
 # while forever
 while True:
     t = datetime.datetime.now().time()
-    print(f"{t.hour:02d}:{t.minute:02d}:{t.second:02d}")
+    h = (t.hour%12)*5
+    m = t.minute
+    s = t.second
+    print(f"{t.hour:02d}:{t.minute:02d}:{t.second:02d} - {h}:{m}:{s}")
 
     pixels.fill((0,0,0))
-    setPixel((t.hour%12)*4, (1,0,0), [[-1,bri/12], [0,bri], [1, bri/12]])
-    setPixel(t.minute, (0,1,0), [[0,bri]])
-    setPixel(t.second, (0,0,1), [[-2,bri/20], [-1,bri/8], [0, bri]])
+    setPixel(h, (1,0,0), [[-1,bri/12], [0,bri], [1, bri/12]])
+    setPixel(m, (0,1,0), [[0,bri]])
+    setPixel(s, (0,0,1), [[-2,bri/20], [-1,bri/8], [0, bri]])
     pixels.show()
     time.sleep(0.1)
