@@ -10,33 +10,25 @@ pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
 bri=255
 toff=-26 # 25 if you get spot on 5 oclock entry
 
-def drawPix(pcnt, w, mult):
-    sp = (toff + min(num_pixels, round(pcnt*num_pixels))) % num_pixels
-    lb = bri
-    for i in range(w):
-        #print(f"i:{i} lb:{lb}")
+def setPixel(n, mult, arr):
+    for i in arr:
+        sp = (toff + n + i[0]) % num_pixels
+        lb = i[1]
         pixels[sp]=(
                     min(255, pixels[sp][0] + lb*mult[0]),
                     min(255, pixels[sp][1] + lb*mult[1]),
                     min(255, pixels[sp][2] + lb*mult[2]),
                     )
 
-        lb = lb*.2
-        sp = sp-1
-        if sp < 0:
-            sp = num_pixels-1
 
 # while forever
 while True:
     t = datetime.datetime.now().time()
-    s = t.second/60
-    m = t.minute/60
-    h = (t.hour % 12)/12
     print(f"{t.hour:02d}:{t.minute:02d}:{t.second:02d}")
 
     pixels.fill((0,0,0))
-    drawPix(h, 1, (1,0,0))
-    drawPix(m, 1, (0,1,0))
-    drawPix(s, 3, (0,0,1))
+    setPixel((t.hour%12)*4, (1,0,0), [[-1,bri/12], [0,bri], [1, bri/12]])
+    setPixel(t.minute, (0,1,0), [[0,bri]])
+    setPixel(t.second, (0,0,1), [[-2,bri/20], [-1,bri/8], [0, bri]])
     pixels.show()
     time.sleep(0.1)
