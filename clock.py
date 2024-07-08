@@ -7,14 +7,14 @@ import math
 # setup the pixels
 num_pixels=60
 pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
-bri=30
+bri=255
 
 def drawPix(pcnt, w, mult):
     sp = min(num_pixels, round(pcnt*num_pixels))
     lb = bri
     for i in range(w):
-        print(f"i:{i} lb:{lb}")
-        pixels[sp]=( 
+        #print(f"i:{i} lb:{lb}")
+        pixels[sp]=(
                     min(255, pixels[sp][0] + lb*mult[0]),
                     min(255, pixels[sp][1] + lb*mult[1]),
                     min(255, pixels[sp][2] + lb*mult[2]),
@@ -31,11 +31,11 @@ while True:
     s = t.second/60
     m = t.minute/60
     h = (t.hour % 12)/12
+    print(f"{t.hour:02d}:{t.minute:02d}:{t.second:02d}")
 
     pixels.fill((0,0,0))
     drawPix(h, 1, (1,0,0))
-    drawPix(m, 2, (0,1,0))
+    drawPix(m, 1, (0,1,0))
     drawPix(s, 3, (0,0,1))
     pixels.show()
     time.sleep(0.1)
-

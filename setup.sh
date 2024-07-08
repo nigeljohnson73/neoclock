@@ -12,3 +12,6 @@ python -m venv ~/.env
 pip install rpi_ws281x adafruit-circuitpython-neopixel
 python3 -m pip install --force-reinstall adafruit-blinka
 
+git clone https://github.com/nigeljohnson73/neoclock.git
+
+
