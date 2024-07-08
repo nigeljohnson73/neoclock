@@ -20,7 +20,7 @@ Once you have your raspberry pi on the network of your choice, you can run the s
 You should then reboot and all will be well in the world. (Once I've finsihed the config)
 
 ## What's going on
-The PI will power up, auto login and run the python clock. It uses your local WiFi to get time and all that jazz.
+The PI will power up, auto login and run the python clock. It uses your local WiFi to get time and all that jazz. This is achieved by a very simple 'hack' by just running the python script in the `rc.local` file.
 
 ## Whatabout someone elses network?
 Luckily the cunning folks at Raspberry Ing allow you to create a text file on the SD card and set up the new WiFi. [Click here](https://forums.raspberrypi.com/viewtopic.php?t=259894} for more information. But basically,
