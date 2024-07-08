@@ -7,8 +7,11 @@ While the LED strips will run from the PI power rails, my OCD would not let me u
 * [144LED/m 5V strip](https://www.amazon.co.uk/dp/B088KJPXVB)
 * [USB-C breakout boards](https://www.amazon.co.uk/dp/B0D2HJZ2V9)
 * [M2.6x6 self tapping screws](https://www.amazon.co.uk/dp/B087X76NXF)
+* 26AWG silicone wire
 
 You will need 60 LEDs. Cut the strip close to the last LED housing to give yourself a little solder wiggle room when assembling.
+
+You will need 3 bits of wire that are about 125mm for the LED strip connection, and 2 that are 65mm for the power.
 
 ## Setup
 You can use the Raspberry PI Imager and install Raspberyy PI OS LITE (32-BIT). You should also attach it to your network and log in via SSH. The fact you're looking at Github, indicates that I dn't need to go into too much detail here.
