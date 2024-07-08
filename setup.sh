@@ -14,13 +14,12 @@ python3 -m pip install --force-reinstall adafruit-blinka
 
 git clone https://github.com/nigeljohnson73/neoclock.git
 
-echo "## Install rc.local hooks" | tee -a $logfile
-sudo cat /etc/rc.local | grep -v 'exit 0' | grep -v '/webroot/' | sudo tee /etc/rc.local.tmp >/dev/null
+sudo cat /etc/rc.local | grep -v 'exit 0' | grep -v 'clock.sh'
 sudo rm /etc/rc.local
 sudo mv /etc/rc.local.tmp /etc/rc.local
 sudo bash -c 'cat >> /etc/rc.local' <<EOF
 # su -l pi -c /hone/pi/neoclock/clock.sh >/tmp/clock.log 2>&1 &
-/hone/pi/neoclock/clock.sh >/tmp/clock.log 2>&1 &
+/home/pi/neoclock/clock.sh >/tmp/clock.log 2>&1 &
 exit 0
 EOF
 sudo chmod 755 /etc/rc.local
