@@ -8,7 +8,7 @@ import math
 num_pixels=60
 pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
 bri=255
-toff=-25
+toff=-26 # 25 if you get spot on 5 oclock entry
 
 def drawPix(pcnt, w, mult):
     sp = (toff + min(num_pixels, round(pcnt*num_pixels))) % num_pixels
