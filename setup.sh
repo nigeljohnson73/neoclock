@@ -3,7 +3,7 @@
 sudo apt update -y
 sudo apt full-upgrade -y
 sudo apt autoremove -y
-sudo apt install -y python3-dev python3-pip python3-setuptools python3-wheel
+sudo apt install -y python3-dev python3-pip python3-setuptools python3-wheel git
 
 python -m venv ~/.env
 
