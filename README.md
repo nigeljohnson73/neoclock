@@ -1,4 +1,4 @@
-# neoclock
+# Neo-clock
 I have a few Raspberry Pi zero W's lying about the place and some LED strips from a WLED project, and that's why we can't have anything nice.
 
 ## Hardware
@@ -27,7 +27,7 @@ You can solder the USB socket onto any ground/+5V you can find, and there are pa
 ## Software setup
 You can use the Raspberry PI Imager and install Raspberry PI OS LITE (32-BIT). You should also attach it to your network and log in via SSH. You're looking at GitHub so I'm assuming that I don't need to go into too much detail here.
 
-Once you have your Raspberry Pi on the network of your choice, you can run the setup as follows:
+Log in as the `pi` user and run the setup as follows:
 
     curl https://raw.githubusercontent.com/nigeljohnson73/neoclock/main/setup.sh | sh
 
@@ -37,7 +37,7 @@ Reboot and all will be well in the world.
 The PI will power up and run the Python clock in the background. It uses your local WiFi to get time and all that jazz.
 
 ## What about someone else's network?
-Luckily the cunning folks at Raspberry Ing allow you to create a text file on the SD card and set up the new WiFi. [Click here](https://forums.raspberrypi.com/viewtopic.php?t=259894} for more information. But basically,
+Luckily the cunning folk at Raspberry Inc allow you to create a text file on the SD card and set up the new WiFi. [Click here](https://forums.raspberrypi.com/viewtopic.php?t=259894} for more information. But basically,
 
 * Mount the SD card on your computer
 * Create a file in the root partition called `wpa_supplicant.conf`
