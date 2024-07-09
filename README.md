@@ -13,6 +13,10 @@ You will need 60 LEDs. Cut the strip close to the last LED housing to give yours
 
 You will need 3 bits of wire about 125mm for the LED strip connection, and 2 about 65mm for the power.
 
+### Stretch goals
+
+I have a [Pimoroni Pirate Audio hat](https://shop.pimoroni.com/products/pirate-audio-mini-speaker?variant=31189753692243) that I want to integrate somehow... but can't at the moment. Any clues, please let me know.
+
 ## Wiring
 There is nothing magical about the wiring, if you have headers, use them, if not, solder wires. I wired mine us as follows:
 
