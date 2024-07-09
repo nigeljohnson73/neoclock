@@ -25,13 +25,13 @@ There is nothing magical about the wiring, if you have headers, use them, if not
 You can solder the USB socket onto any ground/+5V you can find, and there are pads on the back of the PI under the USB power socket for this if you like.
 
 ## Software setup
-You can use the Raspberry PI Imager and install Raspberry PI OS LITE (32-BIT). You should also attach it to your network and log in via SSH. The fact you're looking at Github indicates that I don't need to go into too much detail here.
+You can use the Raspberry PI Imager and install Raspberry PI OS LITE (32-BIT). You should also attach it to your network and log in via SSH. You're looking at GitHub so I'm assuming that I don't need to go into too much detail here.
 
 Once you have your Raspberry Pi on the network of your choice, you can run the setup as follows:
 
     curl https://raw.githubusercontent.com/nigeljohnson73/neoclock/main/setup.sh | sh
 
-You should then reboot and all will be well in the world. (Once I've finsihed the config)
+Reboot and all will be well in the world.
 
 ## What's going on
 The PI will power up and run the Python clock in the background. It uses your local WiFi to get time and all that jazz.
