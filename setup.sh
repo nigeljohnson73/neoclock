@@ -23,3 +23,14 @@ sudo bash -c 'cat >> /etc/rc.local' <<EOF
 exit 0
 EOF
 sudo chmod 755 /etc/rc.local
+
+######################################
+# Stuff here is patched together for the pirate audio hat since the documetation is crap
+#sudo apt remove python3-rpi.gpio
+#sudo apt install -y python3-dev python3-pip python3-setuptools python3-lgpio python3-wheel git libopenblas-dev
+#python -m venv --system-site-packages ~/.env
+#pip install numpy pillow spidev st7789
+#sudo raspi-config nonint do_spi 0
+# Do some DT overlay stuff: https://shop.pimoroni.com/products/pirate-audio-mini-speaker?variant=31189753692243
+# sudo reboot
+#git clone https://github.com/pimoroni/pirate-audio
