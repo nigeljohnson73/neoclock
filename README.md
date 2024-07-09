@@ -22,7 +22,7 @@ There is nothing magical about the wiring, if you have headers, use them, if not
 * LED data --> pin 12 (GPIO18)
 * LED -ve --> pin 14 (GND)
 
-You can solder the USB onto and ground/+5V you can find, and there are pads on the back on the PI under the USB power socket for this if you like.
+You can solder the USB socket onto any ground/+5V you can find, and there are pads on the back of the PI under the USB power socket for this if you like.
 
 ## Software setup
 You can use the Raspberry PI Imager and install Raspberry PI OS LITE (32-BIT). You should also attach it to your network and log in via SSH. The fact you're looking at Github indicates that I don't need to go into too much detail here.
