@@ -20,11 +20,11 @@ I have a [Pimoroni Pirate Audio hat](https://shop.pimoroni.com/products/pirate-a
 ## Wiring
 There is nothing magical about the wiring, if you have headers, use them, if not, solder wires. I wired mine us as follows:
 
+* LED +ve --> pin 4 (5V)
+* LED -ve --> pin 6 (GND)
+* LED data --> pin 12 (GPIO18)
 * USB +ve --> pin 2 (5V)
 * USB -ve --> pin 9 (GND)
-* LED +ve --> pin 4 (5V)
-* LED data --> pin 12 (GPIO18)
-* LED -ve --> pin 14 (GND)
 
 You can solder the USB socket onto any ground/+5V you can find, and there are pads on the back of the PI under the USB power socket for this if you like.
 
