@@ -24,6 +24,10 @@ exit 0
 EOF
 sudo chmod 755 /etc/rc.local
 
+# Want syntax highlighting? VIM is the answer
+#sudo apt install -y vim
+#sudo find /etc/vim/vimrc -exec sed -i 's/^"syntax on/syntax on/g' '{}' \;
+
 ######################################
 # Stuff here is patched together for the pirate audio hat since the documetation is crap
 #sudo apt remove python3-rpi.gpio
