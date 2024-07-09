@@ -4,31 +4,30 @@ import datetime
 import neopixel
 import math
 
-# setup the pixels
-num_pixels=60
+num_pixels = 60 # CAn run on 24 neopixel rings
+bri = 255  # Max brightness
+toff = -26 # This is one pixel past 5 oclock (to allow for soldering)
 pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
-bri=255
-toff=-26 # 25 if you get spot on 5 oclock entry
 
 def setPixel(n, mult, arr):
     for i in arr:
-        sp = (toff + n + i[0]) % num_pixels
-        lb = i[1]
+        #Scale pixels to expected 60
+        sp = int(((toff + n + i[0]) % 60) * (num_pixels / 60))
+        lb = round(i[1])
+        #print(f"n:{n}, sp:{sp}/{num_pixels}, l:{lb}")
         pixels[sp]=(
-                    min(255, pixels[sp][0] + lb*mult[0]),
-                    min(255, pixels[sp][1] + lb*mult[1]),
-                    min(255, pixels[sp][2] + lb*mult[2]),
-                    )
+            max(0, min(255, pixels[sp][0] + lb*mult[0])),
+            max(0, min(255, pixels[sp][1] + lb*mult[1])),
+            max(0, min(255, pixels[sp][2] + lb*mult[2])),
+        )
 
-
-# while forever
 while True:
     t = datetime.datetime.now().time()
     s = t.second
     m = t.minute
-    h = int(((t.hour%12)+m/60+s/3600) * 5)
+    h = int(((t.hour%12)+m/60+s/3600) * 5) # Allow for sweep within the hour
 
-    print(f"{t.hour:02d}:{t.minute:02d}:{t.second:02d} - {h}:{m}:{s}")
+    #print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d} - pixels: {h}:{m}:{s}")
 
     pixels.fill((0,0,0))
     setPixel(h, (1,0,0), [[-1,bri/12], [0,bri], [1, bri/12]])
