@@ -27,7 +27,7 @@ while True:
     m = t.minute
     h = int(((t.hour%12)+m/60+s/3600) * 5) # Allow for sweep within the hour
 
-    #print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d} - pixels: {h}:{m}:{s}")
+    print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d} - pixels: {h}:{m}:{s}")
 
     pixels.fill((0,0,0))
     setPixel(h, (1,0,0), [[-1,bri/12], [0,bri], [1, bri/12]])
