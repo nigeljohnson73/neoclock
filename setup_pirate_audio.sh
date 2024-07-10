@@ -38,7 +38,12 @@ speaker-test -c2 -twav -l2
 
 
 
-#### NEOPIXEL
+#### NEOCLOCK
 pip install rpi_ws281x adafruit-circuitpython-neopixel
 pip install --force-reinstall adafruit-blinka
-
+git clone https://github.com/nigeljohnson73/neoclock.git
+sudo sed -i "s/^exit 0//g" /etc/rc.local
+sudo bash -c 'cat >> /etc/rc.local' <<EOF
+/home/pi/neoclock/clock.sh >/tmp/clock.log 2>&1 &
+exit 0
+EOF
