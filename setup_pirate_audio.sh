@@ -1,15 +1,22 @@
 #!/bin/sh
 
+#### Basic config for python env
 sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y
 sudo apt install -y python3-dev python3-pip python3-setuptools python3-wheel git 
+python -m venv --system-site-packages ~/.env
+. ~/.env/bin/activate
 
+
+
+#### VIM
 sudo apt install -y vim
 sudo find /etc/vim/vimrc -exec sed -i 's/^"syntax on/syntax on/g' '{}' \;
+
+
 
 #### BLUETOOTH
 sudo apt install -y python3-dbus 
 python -m venv --system-site-packages ~/.env
-. ~/.env/bin/activate
 pip install bluedot
 
 
