@@ -24,10 +24,11 @@ try:
     logging.info("init and Clear")
     epd.init()
     epd.Clear()
-    time.sleep(1)
+    #time.sleep(1)
     
     # Drawing on the image
     logging.info("Drawing")    
+    font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
     font20 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 20)
     font18 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 18)
     
@@ -37,9 +38,9 @@ try:
     HRYimage = Image.new('1', (epd.height, epd.width), 255)  # 250*122
     drawblack = ImageDraw.Draw(HBlackimage)
     drawry = ImageDraw.Draw(HRYimage)
-    drawblack.text((10, 0), 'hello world', font = font20, fill = 0)
+    drawblack.text((10, 0), 'hello black world', font = font20, fill = 0)
     drawblack.text((10, 20), '2.13inch e-Paper b V4', font = font20, fill = 0)
-    drawblack.text((120, 0), u'微雪电子', font = font20, fill = 0)    
+    drawry.text((120, 0), u'微雪电子', font = font20, fill = 0)    
     drawblack.line((20, 50, 70, 100), fill = 0)
     drawblack.line((70, 50, 20, 100), fill = 0)
     drawblack.rectangle((20, 50, 70, 100), outline = 0)    
@@ -81,7 +82,7 @@ try:
     newimage = Image.open(os.path.join(picdir, '100x100.bmp'))
     blackimage1.paste(newimage, (0,0))
     epd.display(epd.getbuffer(blackimage1), epd.getbuffer(redimage1))
-    
+
     logging.info("Clear...")
     epd.init()
     epd.clear()
