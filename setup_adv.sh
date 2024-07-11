@@ -39,6 +39,7 @@ pip install bluedot
 
 
 #### PIRATE
+sudo raspi-config nonint do_spi 0
 sudo sed -i "s/^dtparam=audio=on/#dtparam=audio=on/g" /boot/firmware/config.txt
 sudo bash -c 'cat >> /boot/firmware/config.txt' <<EOF
 dtoverlay=hifiberry-dac
