@@ -13,8 +13,8 @@ sudo apt install -y vim
 sudo find /etc/vim/vimrc -exec sed -i 's/^"syntax on/syntax on/g' '{}' \;
 
 
-
 #### BLUETOOTH
+
 sudo apt install -y python3-dbus 
 python -m venv --system-site-packages ~/.env
 pip install bluedot
@@ -39,6 +39,7 @@ speaker-test -c2 -twav -l2
 
 
 #### NEOCLOCK
+sudo apt install -y fonts-dejavu
 pip install rpi_ws281x adafruit-circuitpython-neopixel
 pip install --force-reinstall adafruit-blinka
 git clone https://github.com/nigeljohnson73/neoclock.git
