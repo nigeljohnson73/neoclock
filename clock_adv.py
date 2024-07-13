@@ -1,3 +1,4 @@
+import json
 import board
 import digitalio
 import time
@@ -23,7 +24,7 @@ def buttonReleased(label):
     print(f"{label} released")
     pass
 
-package="Pirate"
+packgue="None"
 buttons = []
 display = False
 
@@ -40,6 +41,11 @@ def setPixel(n, mult, arr):
 
 def setup():
     global display, buttons
+
+    with open('config.json', 'r') as f:
+        data = json.load(f)
+        package = data["package"]
+
 
     if package == "InkyR":
         display = EinkDisplay(multicolor=True)
