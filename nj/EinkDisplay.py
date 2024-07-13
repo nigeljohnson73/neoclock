@@ -23,8 +23,14 @@ picdir = os.path.dirname(os.path.realpath(__file__))
 font72 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 72)
 font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
 
+display_updating = False
 def drawEinkDisplay(multicolor):
-    global epd
+    global epd, display_updating
+    if display_updating:
+        print(f"drawEinkDisplay(): Skipping double update")
+        return
+
+    display_updating = True
     print(f"drawEinkDisplay(multicolor: {multicolor})")
     epd.init()
     #width = epd.width
@@ -61,6 +67,7 @@ def drawEinkDisplay(multicolor):
 
     epd.display(epd.getbuffer(imgb), epd.getbuffer(imgc))
     epd.sleep()
+    display_updating = False
     print(f"drawEinkDisplay(): complete")
 
 class EinkDisplay(NjDisplay):
