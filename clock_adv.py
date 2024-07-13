@@ -22,16 +22,10 @@ pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
 ##########################
 # Setup WIFI connection
 def writeWpa(ssid, psk, country="GB", exec=False):
-    dst = "/boot"
-    fn = "wpa_supplicant.conf"
-    data = 'network={\n  ssid="{ssid}"\n  psk="{psk}"\n}\ncountry={country}\nctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\n'
-    data = data.replace("{ssid}", ssid).replace(
-        "{psk}", psk).replace("{country}", country)
-    with open("/tmp/" + fn, 'w') as f:
-        f.write(data)
-    if exec:
-        os.system(f"sudo cp /tmp/{fn} {dst}/{fn}; sleep 1; sudo reboot")
-
+    # Ongoing from https://github.com/raspberrypi/bookworm-feedback/issues/72#issuecomment-1874654829
+    data='echo -e "[connection]\nid=wifi1\nuuid=ac4a8bf2-afcd-4bd4-bdb4-456d5a92c520\ntype=wifi\n[wifi]\nmode=infrastructure\nssid={ssid}\nhidden=false\n[ipv4]\nmethod=auto\n[ipv6]\naddr-gen-mode=default\nmethod=auto\n[proxy]\n[wifi-security]\nkey-mgmt=wpa-psk\npsk={psk}">wifi1.nmconnection ; mv wifi1.nmconnection /etc/NetworkManager/system-connections/ ; chmod 0600 /etc/NetworkManager/system-connections/*.nmconnection ; raspi-config nonint do_wifi_country "{country}"'
+    data = data.replace("{ssid}", ssid).replace("{psk}", psk).replace("{country}", country)
+    os.system(data)
 
 def buttonPressed(label):
     print(f"{label} pressed")
