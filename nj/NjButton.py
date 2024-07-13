@@ -1,36 +1,30 @@
+import time
 import board
 import digitalio
 
 class NjButton():
-    def __init__(self, pin, label=""):
+    def __init__(self, pin, func_press, func_release=False, label=""):
         self.button = digitalio.DigitalInOut(pin)
         self.button.direction = digitalio.Direction.INPUT
         self.button.pull = digitalio.Pull.UP
+
+        self.debounce_delay = 1/100
+        self.func_press = func_press
+        self.func_release = func_release
         self.label = label
         self.state = self.button.value
         self.last_state = self.state
+        self.last_state_time = time.time()
 
     def loop(self):
         self.state = self.button.value
         if self.state != self.last_state:
-            print(f"Button {self.label}: change state to {not self.state}")
-        self.last_state = self.state
-
-# Pirate Audio board
-buttons = [ NjButton(board.D5, "A"),
-            NjButton(board.D6, "B"),
-           NjButton(board.D16, "X"),
-            NjButton(board.D24, "Y"),
-          ]
-
-ws_buttons = [ NjButton(board.D21, "KEY1"),
-               NjButton(board.D20, "KEY2"),
-               NjButton(board.D16, "KEY3"),
-               NjButton(board.D6, "UP"),
-               NjButton(board.D19, "DOWN"),
-               NjButton(board.D5, "LEFT"),
-               NjButton(board.D26, "RIGHT"),
-               NjButton(board.D13, "PRESS"),
-          ]
-
-
+            now = time.time()
+            if (now - self.last_state_time) > self.debounce_delay:
+                # pull up resistor means buton is pressed when state is low
+                if not self.state:
+                    self.func_press(self.label)
+                elif self.func_release:
+                    self.func_release(self.label)
+                self.last_state_time = now
+            self.last_state = self.state

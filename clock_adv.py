@@ -3,11 +3,8 @@ import digitalio
 import time
 import datetime
 import neopixel
-from colorsys import hsv_to_rgb
-from PIL import Image, ImageDraw, ImageFont
-from st7789 import ST7789
-from adafruit_rgb_display import st7789
-
+from nj.NjButton import NjButton
+from nj.PirateDisplay import PirateDisplay
 
 #################
 ## Neopixel gear
@@ -16,55 +13,17 @@ bri = 255  # Max brightness
 toff = -26 # This is one pixel past 5 oclock (to allow for soldering)
 pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
 
-#################
-## pirate audio gear
-SPI_SPEED_MHZ = 80
-st7789 = ST7789(
-         rotation=90,  # Needed to display the right way up on Pirate Audio
-         port=0,       # SPI port
-         cs=1,         # SPI port Chip-select channel
-         dc=9,         # BCM pin used for data/command
-         backlight=13,
-         spi_speed_hz=SPI_SPEED_MHZ * 1000 * 1000
-         )
-width=240
-height=240
-image = Image.new("RGB", (width, width), (0, 0, 0))
-draw = ImageDraw.Draw(image)
-FONTSIZE=24
-font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', FONTSIZE)
+def buttonPressed(label):
+    print(f"{label} pressed")
+    pass
 
-class NjButton():
-    def __init__(self, pin, label=""):
-        self.button = digitalio.DigitalInOut(pin)
-        self.button.direction = digitalio.Direction.INPUT
-        self.button.pull = digitalio.Pull.UP
-        self.label = label
-        self.state = self.button.value
-        self.last_state = self.state
+def buttonReleased(label):
+    print(f"{label} released")
+    pass
 
-    def loop(self):
-        self.state = self.button.value
-        if self.state != self.last_state:
-            print(f"Button {self.label}: change state to {not self.state}")
-        self.last_state = self.state
-
-# Pirate Audio board
-buttons = [ NjButton(board.D5, "A"),
-            NjButton(board.D6, "B"),
-            NjButton(board.D16, "X"),
-            NjButton(board.D24, "Y"),
-          ]
-
-ws_buttons = [ NjButton(board.D21, "KEY1"),
-               NjButton(board.D20, "KEY2"),
-               NjButton(board.D16, "KEY3"),
-               NjButton(board.D6, "UP"),
-               NjButton(board.D19, "DOWN"),
-               NjButton(board.D5, "LEFT"),
-               NjButton(board.D26, "RIGHT"),
-               NjButton(board.D13, "PRESS"),
-          ]
+package="Pirate"
+buttons = []
+display = False
 
 def setPixel(n, mult, arr):
     for i in arr:
@@ -78,13 +37,32 @@ def setPixel(n, mult, arr):
         )
 
 def setup():
-    pass
+    global display
+
+    if package == "Pirate":
+        display = PirateDisplay()
+        buttons = [ NjButton(board.D5, func_press=buttonPressed, func_release=buttonReleased, label="A"),
+                    NjButton(board.D6, func_press=buttonPressed, label="B"),
+                    NjButton(board.D16, func_press=buttonPressed, label="X"),
+                    NjButton(board.D24, func_press=buttonPressed, label="Y"),
+                ]
+    elif package == "Joy":
+        buttons = [ NjButton(board.D21,func_press=buttonPressed, label="KEY1"),
+                    NjButton(board.D20,func_press=buttonPressed, label="KEY2"),
+                    NjButton(board.D16,func_press=buttonPressed, label="KEY3"),
+                    NjButton(board.D6,func_press=buttonPressed,  label="UP"),
+                    NjButton(board.D19,func_press=buttonPressed, label="DOWN"),
+                    NjButton(board.D5,func_press=buttonPressed,  label="LEFT"),
+                    NjButton(board.D26,func_press=buttonPressed, label="RIGHT"),
+                    NjButton(board.D13,func_press=buttonPressed, label="CENTER"),
+                ]
 
 def buttonLoop():
     for b in buttons:
         b.loop()
 
 def loop():
+    global display
     t = datetime.datetime.now().time()
     s = t.second
     m = t.minute
@@ -97,15 +75,8 @@ def loop():
     pixels.show()
 
     buttonLoop()
-
-    hue = (time.time()/10) % 255
-    r, g, b = [int(c * 255) for c in hsv_to_rgb(hue, 1.0, 1.0)]
-    draw.rectangle((0, 0, 240, 240), (r, g, b))
-    text = "Hello World!"
-    text_left, text_top, text_right, text_bottom = draw.textbbox((0,0), text=text, font=font) 
-    text_width, text_height = (text_right - text_left, text_bottom - text_top)
-    draw.text((width//2 - text_width//2, height//2 - text_height//2), text, font=font, fill=(255, 255, 0))
-    st7789.display(image)
+    if display:
+        display.loop();
 
 last_s = 999
 setup();
