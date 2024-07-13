@@ -3,7 +3,7 @@
 #### Combo
 sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y
 sudo raspi-config nonint do_spi 0
-sudo apt install -y python3-dev python3-pip python3-setuptools python3-wheel libopenblas-dev git vim python3-dbus libopenblas-dev libopenjp2-7 fonts-dejavu
+sudo apt install -y python3-dev python3-pip python3-setuptools python3-wheel libopenblas-dev git vim python3-dbus bluez-tools libopenblas-dev libopenjp2-7 fonts-dejavu
 sudo apt remove -y python3-rpi.gpio && sudo apt autoremove -y
 sudo apt install -y python3-lgpio
 
@@ -32,7 +32,7 @@ sudo find /etc/vim/vimrc -exec sed -i 's/^"syntax on/syntax on/g' '{}' \;
 
 #### BLUETOOTH
 
-sudo apt install -y python3-dbus 
+sudo apt install -y python3-dbus bluez-tools
 python -m venv --system-site-packages ~/.env
 pip install bluedot
 
@@ -66,6 +66,7 @@ pip install --force-reinstall adafruit-blinka
 git clone https://github.com/nigeljohnson73/neoclock.git
 sudo sed -i "s/^exit 0//g" /etc/rc.local
 sudo bash -c 'cat >> /etc/rc.local' <<EOF
+sudo bt-agent --capability=DisplayOnly -p /home/pi/neoclock/btpins &
 /home/pi/neoclock/clock.sh >/tmp/clock.log 2>&1 &
 exit 0
 EOF
