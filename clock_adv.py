@@ -22,7 +22,7 @@ def buttonReleased(label):
     print(f"{label} released")
     pass
 
-package="Inky"
+package="Pirate"
 buttons = []
 display = False
 
@@ -40,7 +40,9 @@ def setPixel(n, mult, arr):
 def setup():
     global display
 
-    if package == "Inky":
+    if package == "InkyR":
+        display = EinkDisplay(multicolor=True)
+    elif package == "Inky":
         display = EinkDisplay()
     elif package == "Pirate":
         display = PirateDisplay()
