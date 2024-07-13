@@ -74,7 +74,7 @@ class EinkDisplay(NjDisplay):
     def __init__(self, multicolor=False):
         super().__init__()
         setupModule()
-        print(f"E-Ink Display enabled (multicolor: {multicolor}")
+        print(f"E-Ink Display enabled (multicolor: {multicolor})")
         self.multicolor=multicolor
         self.last_minute = -1
     
