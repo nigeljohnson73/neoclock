@@ -1,3 +1,4 @@
+import os
 from bluedot.btcomm import BluetoothServer, BluetoothAdapter
 import json
 import board
@@ -48,19 +49,27 @@ def bt_handleData(data):
     print(f"data: '{data}'")
     bt_server.send("OK")
 
-def bt_handleConnect(data):
-    global bt_server
-    print(f"connect: '{data}'")
+def bt_handleConnect():
+    global bt_adapter
+    print(f"bluetooth connect")
+    devices = bt_adapter.paired_devices
+    for d in devices:
+        print(f"    connect: '{d}'")
 
-def bt_handleDisconnect(data):
-    global bt_server
-    print(f"disconnect: '{data}'")
+def bt_handleDisconnect():
+    global bt_adapter
+    print(f"bluetooth disconnect")
+    devices = bt_adapter.paired_devices
+    for d in devices:
+        print(f"    connected: '{d}'")
 
 def setup():
     global display, buttons, package, bt_adapter, bt_server
 
+    config_fn = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config.json')
+    print(f"Config: '{config_fn}'")
     try:
-        with open('config.json', 'r') as f:
+        with open(config_fn, 'r') as f:
             data = json.load(f)
             package = data["package"]
     except:
@@ -130,5 +139,5 @@ while True:
     t = datetime.datetime.now().time()
     if last_s != t.second:
         last_s = t.second
-        print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}")
+        print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}, pairable: {bt_adapter.pairable}")
     #time.sleep(0.01)
