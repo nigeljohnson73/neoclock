@@ -4,7 +4,7 @@ import time
 import datetime
 import neopixel
 from nj.NjButton import NjButton
-#from nj.PirateDisplay import PirateDisplay
+from nj.PirateDisplay import PirateDisplay
 from nj.EinkDisplay import EinkDisplay
 from nj.JoyDisplay import JoyDisplay
 
@@ -23,7 +23,7 @@ def buttonReleased(label):
     print(f"{label} released")
     pass
 
-package="Joy"
+package="Pirate"
 buttons = []
 display = False
 
@@ -39,7 +39,7 @@ def setPixel(n, mult, arr):
         )
 
 def setup():
-    global display
+    global display, buttons
 
     if package == "InkyR":
         display = EinkDisplay(multicolor=True)

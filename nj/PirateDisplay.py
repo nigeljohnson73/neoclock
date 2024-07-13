@@ -41,7 +41,7 @@ class PirateDisplay(NjDisplay):
     def __init__(self):
         super().__init__()
         print(f"Pirate Display enabled ({width}x{height}px)")
-        pass
+        setupModule()
 
     def loop(self):
         super().loop()
