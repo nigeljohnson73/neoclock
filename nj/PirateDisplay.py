@@ -18,8 +18,9 @@ width=240
 height=240
 image = Image.new("RGB", (width, width), (0, 0, 0))
 draw = ImageDraw.Draw(image)
-FONTSIZE=24
-font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', FONTSIZE)
+#FONTSIZE=24
+font24 = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 24)
+font36 = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 36)
 
 r=0
 rd=10
@@ -37,9 +38,6 @@ class PirateDisplay(NjDisplay):
         super().loop()
 
         global r, rd, rmin, rmax
-        #hue = (time.time()/10) % 255
-        #r, g, b = [int(c * 255) for c in hsv_to_rgb(hue, 1.0, 1.0)]
-        #r = int((r+1) % 255)
         if r <= rmin or r >= rmax:
             rd= rd*-1
         r = min(rmax, max(rmin, r+rd))
@@ -47,10 +45,20 @@ class PirateDisplay(NjDisplay):
         b = 0
         #print(f"r:{r}")
         draw.rectangle((0, 0, 240, 240), (r, g, b))
-        #text = "Hello World!"
-        t = datetime.datetime.now().time()
-        text = f"{t.hour:02d}:{t.minute:02d}:{t.second:02d}"
-        text_left, text_top, text_right, text_bottom = draw.textbbox((0,0), text=text, font=font)
+
+        t = datetime.datetime.now()
+        tme = t.strftime("%H:%M")
+        dte = t.strftime("%a %d %b %Y")
+
+        font = font36
+        text_left, text_top, text_right, text_bottom = draw.textbbox((0,0), text=tme, font=font)
         text_width, text_height = (text_right - text_left, text_bottom - text_top)
-        draw.text((width//2 - text_width//2, height//2 - text_height//2), text, font=font, fill=(255, 255, 0))
+        d=(width//2 - text_width//2, height//2 - text_height)
+        draw.text((width//2 - text_width//2, height//2 - text_height-1), tme, font=font, fill=(255,255,0))
+
+        font = font24
+        text_left, text_top, text_right, text_bottom = draw.textbbox((0,0), text=dte, font=font)
+        text_width, text_height = (text_right - text_left, text_bottom - text_top)
+        draw.text((width//2 - text_width//2, height//2 + text_height+1), dte, font=font, fill=(0,255,255))
+
         st7789.display(image)
