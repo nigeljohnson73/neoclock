@@ -16,9 +16,12 @@ class NjButton():
         self.last_state = self.state
         self.last_state_time = time.time()
 
+        print(f"NjButton({self.label}): added: {self.state}")
+
     def loop(self):
         self.state = self.button.value
         if self.state != self.last_state:
+            print(f"NjButton({self.label}): {self.state}")
             now = time.time()
             if (now - self.last_state_time) > self.debounce_delay:
                 # pull up resistor means buton is pressed when state is low

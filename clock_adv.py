@@ -4,8 +4,9 @@ import time
 import datetime
 import neopixel
 from nj.NjButton import NjButton
-from nj.PirateDisplay import PirateDisplay
+#from nj.PirateDisplay import PirateDisplay
 from nj.EinkDisplay import EinkDisplay
+from nj.JoyDisplay import JoyDisplay
 
 #################
 ## Neopixel gear
@@ -22,7 +23,7 @@ def buttonReleased(label):
     print(f"{label} released")
     pass
 
-package="Pirate"
+package="Joy"
 buttons = []
 display = False
 
@@ -52,6 +53,7 @@ def setup():
                     NjButton(board.D24, func_press=buttonPressed, label="Y"),
                 ]
     elif package == "Joy":
+        display = JoyDisplay()
         buttons = [ NjButton(board.D21,func_press=buttonPressed, label="KEY1"),
                     NjButton(board.D20,func_press=buttonPressed, label="KEY2"),
                     NjButton(board.D16,func_press=buttonPressed, label="KEY3"),

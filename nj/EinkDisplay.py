@@ -2,19 +2,29 @@ import threading
 import os
 import datetime
 from PIL import Image,ImageDraw,ImageFont
-from nj.epd2in13b_V4 import EPD
 from nj.NjDisplay import NjDisplay
+
+epd = False
+def setupModule():
+    global epd
+    if epd != False:
+        return
+
+    print("EInk module setup")
+    from nj.epd2in13b_V4 import EPD
+    epd = EPD()
+
 
 libdir = os.path.dirname(os.path.realpath(__file__))
 picdir = os.path.dirname(os.path.realpath(__file__))
 #if os.path.exists(libdir):
 #    sys.path.append(libdir)
 
-
 font72 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 72)
 font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
-epd = EPD()
+
 def drawEinkDisplay(multicolor):
+    global epd
     print(f"drawEinkDisplay(multicolor: {multicolor})")
     epd.init()
     #width = epd.width
@@ -56,9 +66,11 @@ def drawEinkDisplay(multicolor):
 class EinkDisplay(NjDisplay):
     def __init__(self, multicolor=False):
         super().__init__()
+        setupModule()
         print(f"E-Ink Display enabled (multicolor: {multicolor}")
         self.multicolor=multicolor
         self.last_minute = -1
+    
 
     def loop(self):
         super().loop()
