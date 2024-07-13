@@ -1,3 +1,4 @@
+import subprocess
 import os
 from bluedot.btcomm import BluetoothServer, BluetoothAdapter
 import json
@@ -17,6 +18,20 @@ num_pixels = 60 # Can run on 24 neopixel rings
 bri = 255  # Max brightness
 toff = -26 # This is one pixel past 5 oclock (to allow for soldering)
 pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
+
+##########################
+# Setup WIFI connection
+def writeWpa(ssid, psk, country="GB", exec=False):
+    dst = "/boot"
+    fn = "wpa_supplicant.conf"
+    data = 'network={\n  ssid="{ssid}"\n  psk="{psk}"\n}\ncountry={country}\nctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\n'
+    data = data.replace("{ssid}", ssid).replace(
+        "{psk}", psk).replace("{country}", country)
+    with open("/tmp/" + fn, 'w') as f:
+        f.write(data)
+    if exec:
+        os.system(f"sudo cp /tmp/{fn} {dst}/{fn}; sleep 1; sudo reboot")
+
 
 def buttonPressed(label):
     print(f"{label} pressed")
@@ -46,7 +61,13 @@ def setPixel(n, mult, arr):
 
 def bt_handleData(data):
     global bt_server
-    print(f"data: '{data}'")
+    bits = data.strip().split("::")
+    print(f"data: '{bits}'")
+    if bits[0] == "time":
+        subprocess.call(['sudo', 'date', '-s', bits[1]], shell=False)
+    if bits[0] == "wifi":
+        writeWpa(ssid=bits[2], psk=bits[3], country=bits[1], exec=True)
+
     bt_server.send("OK")
 
 def bt_handleConnect():
