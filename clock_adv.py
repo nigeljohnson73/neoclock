@@ -1,3 +1,4 @@
+from bluedot.btcomm import BluetoothServer, BluetoothAdapter
 import json
 import board
 import digitalio
@@ -24,6 +25,9 @@ def buttonReleased(label):
     print(f"{label} released")
     pass
 
+bt_adapter = None
+bt_server = None
+
 package="None"
 buttons = []
 display = False
@@ -39,8 +43,21 @@ def setPixel(n, mult, arr):
             max(0, min(255, pixels[sp][2] + lb*mult[2])),
         )
 
+def bt_handleData(data):
+    global bt_server
+    print(f"data: '{data}'")
+    bt_server.send("OK")
+
+def bt_handleConnect(data):
+    global bt_server
+    print(f"connect: '{data}'")
+
+def bt_handleDisconnect(data):
+    global bt_server
+    print(f"disconnect: '{data}'")
+
 def setup():
-    global display, buttons, package
+    global display, buttons, package, bt_adapter, bt_server
 
     try:
         with open('config.json', 'r') as f:
@@ -48,8 +65,6 @@ def setup():
             package = data["package"]
     except:
         print("No config loaded")
-        pass
-
 
     if package == "InkyR":
         display = EinkDisplay(multicolor=True)
@@ -73,6 +88,18 @@ def setup():
                     NjButton(board.D26,func_press=buttonPressed, label="RIGHT"),
                     NjButton(board.D13,func_press=buttonPressed, label="CENTER"),
                 ]
+
+    print("Enabling Bluetooth pairing")
+    bt_adapter = BluetoothAdapter()
+    bt_adapter.allow_pairing(timeout=None)
+    print("Creating Bluetooth server")
+    # BluetoothServer(data_received_callback, auto_start=True, device='hci0', port=1, encoding='utf-8', power_up_device=False, when_client_connects=None, when_client_disconnects=None)
+    bt_server = BluetoothServer(
+            power_up_device=True, 
+            when_client_connects=bt_handleConnect, 
+            when_client_disconnects=bt_handleDisconnect,
+            data_received_callback=bt_handleData, 
+            )
 
 def buttonLoop():
     for b in buttons:
