@@ -24,7 +24,7 @@ def buttonReleased(label):
     print(f"{label} released")
     pass
 
-packgue="None"
+package="None"
 buttons = []
 display = False
 
@@ -40,11 +40,15 @@ def setPixel(n, mult, arr):
         )
 
 def setup():
-    global display, buttons
+    global display, buttons, package
 
-    with open('config.json', 'r') as f:
-        data = json.load(f)
-        package = data["package"]
+    try:
+        with open('config.json', 'r') as f:
+            data = json.load(f)
+            package = data["package"]
+    except:
+        print("No config loaded")
+        pass
 
 
     if package == "InkyR":
