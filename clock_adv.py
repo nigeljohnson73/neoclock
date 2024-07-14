@@ -1,3 +1,4 @@
+import socket
 import subprocess
 import os
 from bluedot.btcomm import BluetoothServer, BluetoothAdapter
@@ -18,6 +19,21 @@ num_pixels = 60 # Can run on 24 neopixel rings
 bri = 255  # Max brightness
 toff = -26 # This is one pixel past 5 oclock (to allow for soldering)
 pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
+
+def getIpAddress():
+    """
+    Idea from https://stackoverflow.com/a/28950776/3057377
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
+    # Doesn’t even have to be reachable.
+    s.connect_ex(("10.254.254.254", 1))
+    ip = s.getsockname()[0]
+    ip = "127.0.0.1" if ip == "0.0.0.0" else ip
+    s.close()
+    return ip
+
+
 
 ##########################
 # Setup WIFI connection
@@ -58,11 +74,18 @@ def bt_handleData(data):
     bits = data.strip().split("::")
     print(f"data: '{bits}'")
     if bits[0] == "time":
+        bt_server.send("OK\n")
         subprocess.call(['sudo', 'date', '-s', bits[1]], shell=False)
-    if bits[0] == "wifi":
+    elif bits[0] == "wifi":
+        bt_server.send("OK-REBOOT\n")
         writeWpa(ssid=bits[2], psk=bits[3], country=bits[1], exec=True)
+    elif bits[0] == "ip":
+        ip=getIpAddress()
+        bt_server.send(f"{ip}\n")
+    else:
+        bt_server.send(f"NO\n")
 
-    bt_server.send("OK")
+
 
 def bt_handleConnect():
     global bt_adapter
