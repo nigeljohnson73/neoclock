@@ -93,9 +93,12 @@ def bt_handleConnect():
     devices = bt_adapter.paired_devices
     for d in devices:
         print(f"    connect: '{d}'")
+    bt_server.send("ip - shows the network IP\n")
+    bt_server.send("time::YYYY-MM-DD HH:II:SS - Set time\n")
+    bt_server.send("wifi::CC::SSID::PSK - Set WiFi config\n")
 
 def bt_handleDisconnect():
-    global bt_adapter
+    global bt_adapter, bt_server
     print(f"bluetooth disconnect")
     devices = bt_adapter.paired_devices
     for d in devices:
