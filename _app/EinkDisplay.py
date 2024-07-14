@@ -3,6 +3,7 @@ import os
 import datetime
 from PIL import Image,ImageDraw,ImageFont
 from _app.NjDisplay import NjDisplay
+from _app.KillableThread import KillableThread
 
 epd = False
 def setupModule():
@@ -83,6 +84,10 @@ class EinkDisplay(NjDisplay):
         self.multicolor=multicolor
         self.last_minute = -1
     
+    def __del__(self):
+        print("EinkDisplay::__del__()")
+        self.thread.kill()
+        self.thread.join()
 
     def loop(self):
         super().loop()
@@ -91,6 +96,7 @@ class EinkDisplay(NjDisplay):
         if self.last_minute != t.minute:
             self.last_minute = t.minute
             print("e-ink: Starting update thread")
-            thread = threading.Thread(target=drawEinkDisplay, args=(self, self.multicolor,))
-            thread.start()
+            #thread = threading.Thread(target=drawEinkDisplay, args=(self, self.multicolor,))
+            self.thread = KillableThread(target=drawEinkDisplay, args=(self, self.multicolor,))
+            self.thread.start()
 

@@ -12,6 +12,10 @@ from _app.NjButton import NjButton
 from _app.PirateDisplay import PirateDisplay
 from _app.EinkDisplay import EinkDisplay
 from _app.JoyDisplay import JoyDisplay
+from _app.WeatherApi import WeatherApi
+
+config_fn = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config.json')
+print(f"Config: '{config_fn}'")
 
 #################
 ## Neopixel gear
@@ -55,6 +59,10 @@ bt_adapter = None
 bt_server = None
 
 package="None"
+weather_api_key=""
+weather_api_location =""
+weather_api = None
+
 buttons = []
 display = False
 
@@ -69,11 +77,27 @@ def setPixel(n, mult, arr):
             max(0, min(255, pixels[sp][2] + lb*mult[2])),
         )
 
+def writeConfig():
+    global config_fn, package, weather_api_key, weather_api_location
+    data = {
+            "package":package,
+            "weather_api_key":weather_api_key,
+            "weather_api_location":weather_api_location,
+           }
+    with open(config_fn, 'w') as f:
+     json.dump(data, f, sort_keys = True, indent = 4, ensure_ascii = True)
+
+    pass
+
 def bt_handleData(data):
     global bt_server
+    global weather_api, weather_api_key, weather_api_location
+
     bits = data.strip().split("::")
     print(f"data: '{bits}'")
-    if bits[0] == "time":
+    if bits[0] == "pong":
+        bt_server.send("pong\n")
+    elif bits[0] == "time":
         bt_server.send("OK\n")
         subprocess.call(['sudo', 'date', '-s', bits[1]], shell=False)
     elif bits[0] == "wifi":
@@ -82,9 +106,22 @@ def bt_handleData(data):
     elif bits[0] == "ip":
         ip=getIpAddress()
         bt_server.send(f"{ip}\n")
+    elif bits[0] == "wapi_l":
+        bt_server.send("OK\n")
+        weather_api_location = bits[1]
+        if weather_api:
+            weather_api.stop()
+        writeConfig()
+        weather_api = WeatherApi(weather_api_key, weather_api_location)
+    elif bits[0] == "wapi_k":
+        bt_server.send("OK\n")
+        weather_api_key = bits[1]
+        if weather_api:
+            weather_api.stop()
+        writeConfig()
+        weather_api = WeatherApi(weather_api_key, weather_api_location)
     else:
         bt_server.send(f"NO\n")
-
 
 
 def bt_handleConnect():
@@ -93,6 +130,8 @@ def bt_handleConnect():
     devices = bt_adapter.paired_devices
     for d in devices:
         print(f"    connect: '{d}'")
+    bt_server.send("wapi_k::KEY - Weather API key\n")
+    bt_server.send("wapi_l::LOC - Weather API location\n")
     bt_server.send("ip - shows the network IP\n")
     bt_server.send("time::YYYY-MM-DD HH:II:SS - Set time\n")
     bt_server.send("wifi::CC::SSID::PSK - Set WiFi config\n")
@@ -104,14 +143,16 @@ def bt_handleDisconnect():
     display.btConnected(False)
 
 def setup():
+    global config_fn
     global display, buttons, package, bt_adapter, bt_server
+    global weather_api, weather_api_key, weather_api_location
 
-    config_fn = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config.json')
-    print(f"Config: '{config_fn}'")
     try:
         with open(config_fn, 'r') as f:
             data = json.load(f)
             package = data["package"]
+            weather_api_key = data["weather_api_key"]
+            weather_api_location = data["weather_api_location"]
     except:
         print("No config loaded")
 
@@ -149,6 +190,8 @@ def setup():
             when_client_disconnects=bt_handleDisconnect,
             data_received_callback=bt_handleData, 
             )
+    print("Creating WeatherApi service")
+    weather_api = WeatherApi(weather_api_key, weather_api_location)
 
 def buttonLoop():
     for b in buttons:
@@ -173,11 +216,16 @@ def loop():
 
 last_s = 999
 setup();
-while True:
-    loop()
+try:
+    while True:
+        loop()
 
-    t = datetime.datetime.now().time()
-    if last_s != t.second:
-        last_s = t.second
-        print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}, btcon: {display.btConnected()}")
-    #time.sleep(0.01)
+        t = datetime.datetime.now().time()
+        if last_s != t.second:
+            last_s = t.second
+            print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}, btcon: {display.btConnected()}")
+        #time.sleep(0.01)
+except KeyboardInterrupt:
+    print("Closing down")
+    display.__del__()
+    weather_api.__del__()

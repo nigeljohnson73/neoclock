@@ -1,3 +1,5 @@
 {
-	"package":"None"
+    "package": "None",
+    "weather_api_key": "",
+    "weather_api_location": "London"
 }
