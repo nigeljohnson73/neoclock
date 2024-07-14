@@ -25,7 +25,7 @@
  # THE SOFTWARE.
  #
 
-import nj.lcdconfig as config
+import _app.lcdconfig as config
 import time
 import numpy as np
 

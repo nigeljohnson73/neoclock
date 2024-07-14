@@ -8,10 +8,10 @@ import digitalio
 import time
 import datetime
 import neopixel
-from nj.NjButton import NjButton
-from nj.PirateDisplay import PirateDisplay
-from nj.EinkDisplay import EinkDisplay
-from nj.JoyDisplay import JoyDisplay
+from _app.NjButton import NjButton
+from _app.PirateDisplay import PirateDisplay
+from _app.EinkDisplay import EinkDisplay
+from _app.JoyDisplay import JoyDisplay
 
 #################
 ## Neopixel gear

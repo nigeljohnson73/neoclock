@@ -2,7 +2,7 @@ import threading
 import os
 import datetime
 from PIL import Image,ImageDraw,ImageFont
-from nj.NjDisplay import NjDisplay
+from _app.NjDisplay import NjDisplay
 
 epd = False
 def setupModule():
@@ -11,7 +11,7 @@ def setupModule():
         return
 
     print("EInk module setup")
-    from nj.epd2in13b_V4 import EPD
+    from _app.epd2in13b_V4 import EPD
     epd = EPD()
 
 

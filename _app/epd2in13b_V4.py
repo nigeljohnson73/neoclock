@@ -28,7 +28,7 @@
 #
 
 import logging
-import nj.epdconfig as epdconfig
+import _app.epdconfig as epdconfig
 
 # Display resolution
 EPD_WIDTH       = 122

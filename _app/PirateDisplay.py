@@ -1,52 +1,59 @@
 import datetime
 from colorsys import hsv_to_rgb
 from PIL import Image, ImageDraw, ImageFont
-from nj.NjDisplay import NjDisplay
+from st7789 import ST7789
+from _app.NjDisplay import NjDisplay
 
-disp = False
+st7789 = False
 
 def setupModule():
-    global disp, r, rd, rmin, rmax, image, draw,width,height
-    if disp != False:
+    global st7789
+    if st7789 != False:
         return
-    print("Joypad module setup")
 
-    import nj.LCD_1in44 as LCD_1in44
-    disp = LCD_1in44.LCD()
-    Lcd_ScanDir = LCD_1in44.SCAN_DIR_DFT  #SCAN_DIR_DFT = D2U_L2R
-    disp.LCD_Init(Lcd_ScanDir)
-    disp.LCD_Clear()
+    from st7789 import ST7789
 
-    width=disp.width
-    height=disp.height
-    image = Image.new("RGB", (width, width), (0, 0, 0))
-    draw = ImageDraw.Draw(image)
+    SPI_SPEED_MHZ = 80
+    st7789 = ST7789(
+         rotation=90,  # Needed to display the right way up on Pirate Audio
+         port=0,       # SPI port
+         cs=1,         # SPI port Chip-select channel
+         dc=9,         # BCM pin used for data/command
+         backlight=13,
+         spi_speed_hz=SPI_SPEED_MHZ * 1000 * 1000
+         )
 
-font24 = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 15)
-font36 = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 24)
+width=240
+height=240
+image = Image.new("RGB", (width, width), (0, 0, 0))
+draw = ImageDraw.Draw(image)
+#FONTSIZE=24
+font24 = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 24)
+font36 = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 36)
 
 r=0
 rd=10
 rmax=200
 rmin=0
 
-class JoyDisplay(NjDisplay):
+
+class PirateDisplay(NjDisplay):
     def __init__(self):
         super().__init__()
+        print(f"Pirate Display enabled ({width}x{height}px)")
         setupModule()
-        print(f"Joypad Display enabled ({disp.width}x{disp.height}px)")
 
     def loop(self):
         super().loop()
 
-        global disp, r, rd, rmin, rmax, image, draw,width,height
+        global r, rd, rmin, rmax
         if r <= rmin or r >= rmax:
             rd= rd*-1
         r = min(rmax, max(rmin, r+rd))
         g = 0
         b = 0
         #print(f"r:{r}")
-        draw.rectangle((0, 0, width, height), (r, g, b))
+        draw.rectangle((0, 0, 240, 240), (r, g, b))
 
         t = datetime.datetime.now()
         tme = t.strftime("%H:%M")
@@ -63,5 +70,4 @@ class JoyDisplay(NjDisplay):
         text_width, text_height = (text_right - text_left, text_bottom - text_top)
         draw.text((width//2 - text_width//2, height//2 + text_height+1), dte, font=font, fill=(0,255,255))
 
-        disp.LCD_ShowImage(image,0,0)
-
+        st7789.display(image)
