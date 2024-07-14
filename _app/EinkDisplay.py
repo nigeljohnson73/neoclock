@@ -24,7 +24,7 @@ font72 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 72)
 font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
 
 display_updating = False
-def drawEinkDisplay(multicolor):
+def drawEinkDisplay(display, multicolor):
     global epd, display_updating
     if display_updating:
         print(f"drawEinkDisplay(): Skipping double update")
@@ -62,8 +62,13 @@ def drawEinkDisplay(multicolor):
     text_width, text_height = (text_right - text_left, text_bottom - text_top)
     drawc.text((width//2 - text_width//2, height//2 + text_height+1), dte, font=font, fill=0)
 
-    #drawb.text((10, 0), tme, font = font24, fill = 0)
-    #drawc.text((10, 30), dte, font = font24, fill = 0)
+    drawb.arc((0,0,10,10),  0, 360, fill=0)
+    if display.btConnected():
+        print("Display says BT is connected")
+        drawc.ellipse((1,1,9,9), fill=0)
+    else:
+        print("Display says BT is DISConnected")
+        pass
 
     epd.display(epd.getbuffer(imgb), epd.getbuffer(imgc))
     epd.sleep()
@@ -86,6 +91,6 @@ class EinkDisplay(NjDisplay):
         if self.last_minute != t.minute:
             self.last_minute = t.minute
             print("e-ink: Starting update thread")
-            thread = threading.Thread(target=drawEinkDisplay, args=(self.multicolor,))
+            thread = threading.Thread(target=drawEinkDisplay, args=(self, self.multicolor,))
             thread.start()
 

@@ -70,4 +70,7 @@ class PirateDisplay(NjDisplay):
         text_width, text_height = (text_right - text_left, text_bottom - text_top)
         draw.text((width//2 - text_width//2, height//2 + text_height+1), dte, font=font, fill=(0,255,255))
 
+        con = (255,0,0) if self.btConnected() else (0,0,0)
+        draw.ellipse((0,0,10,10), fill=con, outline=(0,255,255))
+
         st7789.display(image)

@@ -96,13 +96,12 @@ def bt_handleConnect():
     bt_server.send("ip - shows the network IP\n")
     bt_server.send("time::YYYY-MM-DD HH:II:SS - Set time\n")
     bt_server.send("wifi::CC::SSID::PSK - Set WiFi config\n")
+    display.btConnected(True)
 
 def bt_handleDisconnect():
     global bt_adapter, bt_server
     print(f"bluetooth disconnect")
-    devices = bt_adapter.paired_devices
-    for d in devices:
-        print(f"    connected: '{d}'")
+    display.btConnected(False)
 
 def setup():
     global display, buttons, package, bt_adapter, bt_server
@@ -180,5 +179,5 @@ while True:
     t = datetime.datetime.now().time()
     if last_s != t.second:
         last_s = t.second
-        print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}, pairable: {bt_adapter.pairable}")
+        print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}, btcon: {display.btConnected()}")
     #time.sleep(0.01)
