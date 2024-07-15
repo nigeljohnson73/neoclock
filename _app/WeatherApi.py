@@ -1,12 +1,15 @@
 import json
 import os
+import os.path
 import time
 import threading
 import requests
 from _app.KillableThread import KillableThread
 
+forecast = {}
 
 def runApi(key, location):
+    global forecast
 
     if len(key) == 0 or len(location) == 0:
         print("WeatherApi: Skipping no configuration")
@@ -22,7 +25,7 @@ def runApi(key, location):
             outfile = os.path.join(".", "weather.json")
             data = {}
 
-            if True:
+            if os.Path.isfile(outfile):
                 print ("Loading Weather API stored data")
                 with open(outfile, 'r') as f:
                     data = json.load(f)
@@ -42,10 +45,31 @@ def runApi(key, location):
 
             #for key in data:
                 #print(key," : ",data[key]);
+            fc = {"now":{}, "next":{}}
+            fc["valid"] = time.time()
+            fc["now"]["temp_c"] = data["current"]["temp_c"]
+            fc["now"]["temp_f"] = data["current"]["temp_f"]
+            fc["now"]["humidity"] = data["current"]["humidity"]
+            fc["now"]["condition_text"] = data["current"]["condition"]["text"]
+            fc["now"]["condition_icon"] = f'http:{data["current"]["condition"]["icon"]}'
+            fc["next"]["min_temp_c"] = data["forecast"]["forecastday"][0]["day"]["mintemp_c"]
+            fc["next"]["min_temp_f"] = data["forecast"]["forecastday"][0]["day"]["mintemp_f"]
+            fc["next"]["max_temp_c"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
+            fc["next"]["max_temp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
+            fc["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
+            fc["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
+
+            forecast = fc
+            json_str = json.dumps(fc, indent=4)
+            print(json_str)
+
 
         time.sleep(0.1)
     print(f"WeatherApi: finishing loop for '{location}'")
 
+def getForecast():
+    global forecast
+    return forecast
 
 class WeatherApi:
     def __init__(self, key, location):
