@@ -1,5 +1,12 @@
 from _app.WeatherApi import getForecast
 
+'''
+Base class that handles some data, but really is
+just a holding spot for some inheritance on the 
+loop function
+'''
+
+
 class NjDisplay:
     def __init__(self):
         self.btConnected(False)
