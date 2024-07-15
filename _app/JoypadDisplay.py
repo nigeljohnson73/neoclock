@@ -38,7 +38,7 @@ class JoypadDisplay(NjDisplay):
     def __init__(self):
         super().__init__()
         setupModule()
-        print(f"JoypadDisplay::JoypadDisplay(({disp.width}, {disp.height}))")
+        print(f"JoypadDisplay::JoypadDisplay(({width}, {height}))")
 
     def loop(self):
         super().loop()
