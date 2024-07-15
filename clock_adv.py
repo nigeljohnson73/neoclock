@@ -233,7 +233,9 @@ try:
 
 except KeyboardInterrupt:
     print("Closing down")
-    if display:
-        display.__del__()
-    if weather_api:
-        weather_api.__del__()
+#    if display:
+#        display.__del__()
+#    if weather_api:
+#        weather_api.__del__()
+    display = None
+    weather_api = None
