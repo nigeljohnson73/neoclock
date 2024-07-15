@@ -106,18 +106,20 @@ def bt_handleData(data):
     elif bits[0] == "ip":
         ip=getIpAddress()
         bt_server.send(f"{ip}\n")
-    elif bits[0] == "wapi_l":
+    elif bits[0] == "wapi-l":
         bt_server.send("OK\n")
         weather_api_location = bits[1]
         if weather_api:
             weather_api.stop()
+        weather_api = None
         writeConfig()
         weather_api = WeatherApi(weather_api_key, weather_api_location)
-    elif bits[0] == "wapi_k":
+    elif bits[0] == "wapi-k":
         bt_server.send("OK\n")
         weather_api_key = bits[1]
         if weather_api:
             weather_api.stop()
+        weather_api = None
         writeConfig()
         weather_api = WeatherApi(weather_api_key, weather_api_location)
     else:
@@ -130,8 +132,8 @@ def bt_handleConnect():
     devices = bt_adapter.paired_devices
     for d in devices:
         print(f"    connect: '{d}'")
-    bt_server.send("wapi_k::KEY - Weather API key\n")
-    bt_server.send("wapi_l::LOC - Weather API location\n")
+    bt_server.send("wapi-k::KEY - Weather API key\n")
+    bt_server.send("wapi-l::LOC - Weather API location\n")
     bt_server.send("ip - shows the network IP\n")
     bt_server.send("time::YYYY-MM-DD HH:II:SS - Set time\n")
     bt_server.send("wifi::CC::SSID::PSK - Set WiFi config\n")

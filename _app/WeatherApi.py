@@ -50,6 +50,7 @@ def runApi(key, location):
                 else:
                     print(f"    Response BAD")
 
+            print ("Weather API processing response")
             #for key in data:
                 #print(key," : ",data[key]);
             fc = {"now":{}, "next":{}}
@@ -75,6 +76,7 @@ def runApi(key, location):
                 fc["next"]["condition_img"] = None
 
             forecast = fc
+            print ("Weather API calls completed")
             #json_str = json.dumps(fc, indent=4)
             #print(json_str)
 
