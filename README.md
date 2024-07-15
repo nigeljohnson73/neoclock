@@ -15,7 +15,13 @@ Cut the LED strip close to the last LED housing to give yourself a little solder
 
 ### Stretch goals
 
-I have a [Pimoroni Pirate Audio hat](https://shop.pimoroni.com/products/pirate-audio-mini-speaker?variant=31189753692243) that I want to integrate somehow... but can't at the moment. Any clues, please let me know.
+I have a couple of displays and things:
+
+* [Pimoroni Pirate Audio hat](https://shop.pimoroni.com/products/pirate-audio-mini-speaker?variant=31189753692243)
+* [Waveshare 2.13" Mono e-ink display](https://www.amazon.co.uk/dp/B07J3FHJVP)
+* [Waveshare 2.13" Mono and red/yellow e-ink display](https://www.amazon.co.uk/dp/B075FR81WL)
+* [Waveshare 1.44" hat with joypad and stuff](https://www.amazon.co.uk/dp/B077YK8161)
+
 
 ## Wiring
 There is nothing magical about the wiring, if you have headers, use them, if not, solder wires. I wired mine us as follows:
@@ -37,26 +43,12 @@ Log in as the `pi` user and run the setup as follows:
 
 Reboot and all will be well in the world.
 
+If you want to make the advanced version with the displays work, get this on:
+
+    curl https://raw.githubusercontent.com/nigeljohnson73/neoclock/main/setup_adv.sh | sh
+
 ## What's going on
 The PI will power up and run the Python clock in the background. It uses your local WiFi to get time and all that jazz.
 
 ## What about someone else's network?
-Luckily the cunning folk at Raspberry Inc allow you to create a text file on the SD card and set up the new WiFi. [Click here](https://forums.raspberrypi.com/viewtopic.php?t=259894} for more information. But basically,
-
-* Mount the SD card on your computer
-* Create a file in the root partition called `wpa_supplicant.conf`
-* Paste the following in, and update the SSID/PAssphrase, also check the country
-
-```
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-update_config=1
-country=GB
-
-network={
-	ssid="WiFi SSID"
-	psk="WPA/WPA2 passphrase"
-	key_mgmt=WPA-PSK
-}
-```
-Reassemble, power up and wait for 10 minutes. Job jobbed.
-
+Well, use the built-in bluetooth connector to set the WiFi up. It's currently untested, but the folk at Raspberry have purposely broken the old way of configuring WiFi the cool way.
