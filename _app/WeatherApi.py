@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import os.path
@@ -17,20 +18,25 @@ def runApi(key, location):
         return
 
     last_call = 0
+    last_hour = -1
     call_duration= 30
     print(f"WeatherApi: starting loop for '{location}'")
     while True:
+
+        t = datetime.datetime.now().time()
+        h = t.hour
         now = time.time()
-        if now >= (last_call+call_duration):
+        if h != last_hour or now >= (last_call+call_duration):
             last_call = now
             outfile = os.path.join(".", "weather.json")
             data = {}
 
-            if os.path.isfile(outfile):
+            if h == last_hour and os.path.isfile(outfile):
                 print ("Loading Weather API stored data")
                 with open(outfile, 'r') as f:
                     data = json.load(f)
             else:
+                last_hour = h
                 print ("Making Weather API call")
                 url = f"http://api.weatherapi.com/v1/forecast.json?key={key}&q={location}&days=1&aqi=yes&alerts=yes"
                 print(f"    {url}")
