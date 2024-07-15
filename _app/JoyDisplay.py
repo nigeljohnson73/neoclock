@@ -63,5 +63,6 @@ class JoyDisplay(NjDisplay):
         text_width, text_height = (text_right - text_left, text_bottom - text_top)
         draw.text((width//2 - text_width//2, height//2 + text_height+1), dte, font=font, fill=(0,255,255))
 
-        disp.LCD_ShowImage(image,0,0)
+        rimage = image.rotate(180)
+        disp.LCD_ShowImage(rimage,0,0)
 
