@@ -64,7 +64,7 @@ weather_api_location =""
 weather_api = None
 
 buttons = []
-display = False
+display = None
 
 def setPixel(n, mult, arr):
     for i in arr:
@@ -135,12 +135,14 @@ def bt_handleConnect():
     bt_server.send("ip - shows the network IP\n")
     bt_server.send("time::YYYY-MM-DD HH:II:SS - Set time\n")
     bt_server.send("wifi::CC::SSID::PSK - Set WiFi config\n")
-    display.btConnected(True)
+    if display:
+        display.btConnected(True)
 
 def bt_handleDisconnect():
     global bt_adapter, bt_server
     print(f"bluetooth disconnect")
-    display.btConnected(False)
+    if display:
+        display.btConnected(False)
 
 def setup():
     global config_fn
@@ -223,9 +225,15 @@ try:
         t = datetime.datetime.now().time()
         if last_s != t.second:
             last_s = t.second
-            print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}, btcon: {display.btConnected()}")
+            if display:
+                print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}, btcon: {display.btConnected()}")
+            else:
+                print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}")
         #time.sleep(0.01)
+
 except KeyboardInterrupt:
     print("Closing down")
-    display.__del__()
-    weather_api.__del__()
+    if display:
+        display.__del__()
+    if weather_api:
+        weather_api.__del__()
