@@ -32,12 +32,12 @@ def drawEinkDisplay(display, multicolor):
         return
 
     display_updating = True
-    print(f"drawEinkDisplay(multicolor: {multicolor})")
     epd.init()
     #width = epd.width
     #height = epd.height
     width = epd.height
     height = epd.width
+    print(f"drawEinkDisplay(({width}x{height}), multicolor: {multicolor})")
 
     imgb = Image.new('1', (epd.height, epd.width), 255)  # 250*122
     #imgc = Image.new('1', (epd.height, epd.width), 255)  # 250*122
