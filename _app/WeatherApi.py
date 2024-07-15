@@ -4,6 +4,7 @@ import os.path
 import time
 import threading
 import requests
+from PIL import Image
 from _app.KillableThread import KillableThread
 
 forecast = {}
@@ -25,7 +26,7 @@ def runApi(key, location):
             outfile = os.path.join(".", "weather.json")
             data = {}
 
-            if os.Path.isfile(outfile):
+            if os.path.isfile(outfile):
                 print ("Loading Weather API stored data")
                 with open(outfile, 'r') as f:
                     data = json.load(f)
@@ -52,16 +53,24 @@ def runApi(key, location):
             fc["now"]["humidity"] = data["current"]["humidity"]
             fc["now"]["condition_text"] = data["current"]["condition"]["text"]
             fc["now"]["condition_icon"] = f'http:{data["current"]["condition"]["icon"]}'
-            fc["next"]["min_temp_c"] = data["forecast"]["forecastday"][0]["day"]["mintemp_c"]
-            fc["next"]["min_temp_f"] = data["forecast"]["forecastday"][0]["day"]["mintemp_f"]
-            fc["next"]["max_temp_c"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
-            fc["next"]["max_temp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
+            fc["next"]["mintemp_c"] = data["forecast"]["forecastday"][0]["day"]["mintemp_c"]
+            fc["next"]["mintemp_f"] = data["forecast"]["forecastday"][0]["day"]["mintemp_f"]
+            fc["next"]["maxtemp_c"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
+            fc["next"]["maxtemp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
             fc["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
             fc["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
+            try:
+                fc["now"]["condition_img"] = Image.open(requests.get(fc["now"]["condition_icon"], verify=False, stream=True).raw)
+            except:
+                fc["now"]["condition_img"] = None
+            try:
+                fc["next"]["condition_img"] = Image.open(requests.get(fc["next"]["condition_icon"], verify=False, stream=True).raw)
+            except:
+                fc["next"]["condition_img"] = None
 
             forecast = fc
-            json_str = json.dumps(fc, indent=4)
-            print(json_str)
+            #json_str = json.dumps(fc, indent=4)
+            #print(json_str)
 
 
         time.sleep(0.1)

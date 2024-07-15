@@ -3,6 +3,8 @@ from _app.WeatherApi import getForecast
 class NjDisplay:
     def __init__(self):
         self.btConnected(False)
+
+    def __del__(self):
         pass
 
     def loop(self):
