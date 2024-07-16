@@ -1,7 +1,7 @@
 import datetime
 from PIL import Image, ImageDraw, ImageFont
 from st7789 import ST7789
-from _app.NjDisplay import NjDisplay
+from _app.DisplayBase import DisplayBase
 from _app.WeatherApi import getForecast
 
 from io import BytesIO
@@ -40,7 +40,7 @@ font_date = ImageFont.truetype(font_name, 24)
 font_time = ImageFont.truetype(font_name, 64)
 
 
-class PirateDisplay(NjDisplay):
+class PirateDisplay(DisplayBase):
     def __init__(self):
         super().__init__()
         print(f"PirateDisplay::PirateDisplay(({width},{height}))")
