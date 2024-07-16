@@ -84,7 +84,7 @@ class PirateDisplay(DisplayBase):
             (0, 0), text=tme, font=font)
         text_width, text_height = (
             text_right - text_left, text_bottom - text_top)
-        tp = (width//2-text_width//2, cy+((height-cy)//2)-text_height-1-yo)
+        tp = (width//2-text_width//2, cy+((height-cy)//2)-text_height-3-yo)
         draw.text(tp, tme, font=font, fill=(255, 255, 0))
 
         # Date
@@ -146,7 +146,7 @@ class PirateDisplay(DisplayBase):
             tp = (3*width//4-text_width//2, cy)
             draw.text(tp, tmp, font=font, fill=(0, 255, 255))
 
-            cy = 0+64+2+20
+            cy = 0+64+2+30
             tmp = fc["location"]["name"]
             font = font_locn
             text_left, text_top, text_right, text_bottom = draw.textbbox(
