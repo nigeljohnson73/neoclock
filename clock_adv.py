@@ -33,6 +33,7 @@ package = "None"
 weather_api_key = ""
 weather_api_location = ""
 weather_api = None
+weather_api_choice = -1
 
 buttons = []
 display = None
@@ -97,7 +98,7 @@ def writeConfig():
 # Bleutooth connection handling malary: TODO: move this soemwhere else
 def bt_handleData(data):
     global bt_server
-    global weather_api, weather_api_key, weather_api_location
+    global weather_api, weather_api_key, weather_api_location, weather_api_choice
 
     bits = data.strip().split("::")
     print(f"data: '{bits}'")
@@ -119,7 +120,8 @@ def bt_handleData(data):
             weather_api.stop()
         weather_api = None
         writeConfig()
-        weather_api = WeatherApi(weather_api_key, weather_api_location)
+        weather_api_choice = -1;
+        pageOnce("config")
     elif bits[0] == "wapi-k":
         bt_server.send("OK\n")
         weather_api_key = bits[1]
@@ -127,7 +129,8 @@ def bt_handleData(data):
             weather_api.stop()
         weather_api = None
         writeConfig()
-        weather_api = WeatherApi(weather_api_key, weather_api_location)
+        weather_api_choice = -1;
+        pageOnce("config")
     else:
         bt_server.send(f"NO\n")
 
@@ -156,14 +159,31 @@ def bt_handleDisconnect():
 
 ###########################################################################################
 # handle button pressing for now. TODO: move this somewhere else
+def nextLocation(label):
+    global weather_api, weather_api_key, weather_api_location, weather_api_choice
+    print(f"{label} pressed")
+
+    weather_api = None
+    choices = []
+    bits = weather_api_location.strip().split(",")
+    for i in bits:
+        if len(i.strip()):
+            print (f"    Adding location choice '{i}'")
+            choices.append(i)
+    if len(choices):
+        weather_api_choice = weather_api_choice + 1
+        if weather_api_choice >= len(choices):
+                weather_api_choice = 0
+        print (f"    Choice '{choices[weather_api_choice]}'")
+        weather_api = WeatherApi(weather_api_key, choices[weather_api_choice])
+
+
 def buttonPressed(label):
     print(f"{label} pressed")
-    pass
 
 
 def buttonReleased(label):
     print(f"{label} released")
-    pass
 
 
 ###########################################################################################
@@ -190,7 +210,7 @@ def setup():
         display = EinkDisplay()
     elif package == "Pirate":
         display = PirateDisplay()
-        buttons = [NjButton(board.D5, func_press=buttonPressed, func_release=buttonReleased, label="A"),
+        buttons = [NjButton(board.D5, func_press=nextLocation, label="A"),
                    NjButton(board.D6, func_press=buttonPressed, label="B"),
                    NjButton(board.D16, func_press=buttonPressed, label="X"),
                    NjButton(board.D24, func_press=buttonPressed, label="Y"),
@@ -199,7 +219,7 @@ def setup():
         display = JoypadDisplay()
         buttons = [NjButton(board.D21, func_press=buttonPressed, label="KEY1"),
                    NjButton(board.D20, func_press=buttonPressed, label="KEY2"),
-                   NjButton(board.D16, func_press=buttonPressed, label="KEY3"),
+                   NjButton(board.D16, func_press=nextLocation, label="KEY3"),
                    NjButton(board.D6, func_press=buttonPressed,  label="UP"),
                    NjButton(board.D19, func_press=buttonPressed, label="DN"),
                    NjButton(board.D5, func_press=buttonPressed,  label="LT"),
@@ -219,8 +239,9 @@ def setup():
         data_received_callback=bt_handleData,
     )
 
-    print("Creating WeatherApi service")
-    weather_api = WeatherApi(weather_api_key, weather_api_location)
+    nextLocation("setup")
+    #print("Creating WeatherApi service")
+    #weather_api = WeatherApi(weather_api_key, weather_api_location)
 
 
 def buttonLoop():

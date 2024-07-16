@@ -17,10 +17,27 @@ def runApi(key, location):
         print("WeatherApi: Skipping no configuration")
         return
 
+    print(f"WeatherApi: starting loop for '{location}'")
+    forecast = {"now":{}, "next":{}, "location":{}}
+    forecast["valid"] = time.time()
+    forecast["location"]["name"] = location
+    forecast["now"]["temp_c"] = ""
+    forecast["now"]["temp_f"] = ""
+    forecast["now"]["humidity"] = ""
+    forecast["now"]["condition_text"] = ""
+    forecast["now"]["condition_icon"] = ""
+    forecast["now"]["condition_img"] = None
+    forecast["next"]["mintemp_c"] = ""
+    forecast["next"]["mintemp_f"] = ""
+    forecast["next"]["maxtemp_c"] = ""
+    forecast["next"]["maxtemp_f"] = ""
+    forecast["next"]["condition_text"] = ""
+    forecast["next"]["condition_icon"] = ""
+    forecast["next"]["condition_img"] = None
+
     last_call = 0
     last_hour = -1
     call_duration= 30
-    print(f"WeatherApi: starting loop for '{location}'")
     while True:
 
         t = datetime.datetime.now().time()
@@ -53,29 +70,31 @@ def runApi(key, location):
             print ("Weather API processing response")
             #for key in data:
                 #print(key," : ",data[key]);
-            fc = {"now":{}, "next":{}}
-            fc["valid"] = time.time()
-            fc["now"]["temp_c"] = data["current"]["temp_c"]
-            fc["now"]["temp_f"] = data["current"]["temp_f"]
-            fc["now"]["humidity"] = data["current"]["humidity"]
-            fc["now"]["condition_text"] = data["current"]["condition"]["text"]
-            fc["now"]["condition_icon"] = f'http:{data["current"]["condition"]["icon"]}'
-            fc["next"]["mintemp_c"] = data["forecast"]["forecastday"][0]["day"]["mintemp_c"]
-            fc["next"]["mintemp_f"] = data["forecast"]["forecastday"][0]["day"]["mintemp_f"]
-            fc["next"]["maxtemp_c"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
-            fc["next"]["maxtemp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
-            fc["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
-            fc["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
+            forecast = {"now":{}, "next":{}, "location":{}}
+            forecast["valid"] = time.time()
+            forecast["location"]["name"] = data["location"]["name"]
+            forecast["now"]["temp_c"] = data["current"]["temp_c"]
+            forecast["now"]["temp_f"] = data["current"]["temp_f"]
+            forecast["now"]["humidity"] = data["current"]["humidity"]
+            forecast["now"]["condition_text"] = data["current"]["condition"]["text"]
+            forecast["now"]["condition_icon"] = f'http:{data["current"]["condition"]["icon"]}'
+            forecast["now"]["condition_img"] = None
+            forecast["next"]["mintemp_c"] = data["forecast"]["forecastday"][0]["day"]["mintemp_c"]
+            forecast["next"]["mintemp_f"] = data["forecast"]["forecastday"][0]["day"]["mintemp_f"]
+            forecast["next"]["maxtemp_c"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
+            forecast["next"]["maxtemp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
+            forecast["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
+            forecast["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
+            forecast["next"]["condition_img"] = None
             try:
-                fc["now"]["condition_img"] = Image.open(requests.get(fc["now"]["condition_icon"], verify=False, stream=True).raw)
+                forecast["now"]["condition_img"] = Image.open(requests.get(forecast["now"]["condition_icon"], verify=False, stream=True).raw)
             except:
-                fc["now"]["condition_img"] = None
+                pass
             try:
-                fc["next"]["condition_img"] = Image.open(requests.get(fc["next"]["condition_icon"], verify=False, stream=True).raw)
+                forecast["next"]["condition_img"] = Image.open(requests.get(forecast["next"]["condition_icon"], verify=False, stream=True).raw)
             except:
-                fc["next"]["condition_img"] = None
+                pass
 
-            forecast = fc
             print ("Weather API calls completed")
             #json_str = json.dumps(fc, indent=4)
             #print(json_str)
@@ -100,5 +119,7 @@ class WeatherApi:
 
     def stop(self):
         print("WeatherApi::stop()")
+        global forecast
+        forecast = {}
         self.thread.kill()
         self.thread.join()
