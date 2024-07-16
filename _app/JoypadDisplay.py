@@ -47,7 +47,7 @@ class JoypadDisplay(NjDisplay):
         global disp, image, draw, width, height
 
         # background bluer if BT connected
-        bgcol = (0,0,52) if self.btConnected() else 0
+        bgcol = (0, 0, 52) if self.btConnected() else 0
         draw.rectangle((0, 0, width, height), bgcol)
 
         if True:
@@ -55,7 +55,7 @@ class JoypadDisplay(NjDisplay):
             tme = t.strftime("%H:%M")
             dte = t.strftime("%a %d %b %Y")
 
-            cy = height -18 #64+10
+            cy = height - 18  # 64+10
             font = font_date
             text_left, text_top, text_right, text_bottom = draw.textbbox(
                 (0, 0), text=dte, font=font)
@@ -69,7 +69,8 @@ class JoypadDisplay(NjDisplay):
 
             fc = getForecast()
             if len(fc):
-                self.forecast_current_img = fc["now"].get("condition_img", None)
+                self.forecast_current_img = fc["now"].get(
+                    "condition_img", None)
                 self.forecast_next_img = fc["next"].get("condition_img", None)
 
                 y = 0  # (image.height - self.forecast_next_img.height) // 2
@@ -84,6 +85,7 @@ class JoypadDisplay(NjDisplay):
                     image.paste(self.forecast_next_img,
                                 (x, y), self.forecast_next_img)
 
+                # Do the current temp/humidity
                 tmp = ""
                 if len(str(fc["now"]["temp_c"])):
                     tmp = f'{round(fc["now"]["temp_c"])}C'
@@ -99,7 +101,7 @@ class JoypadDisplay(NjDisplay):
                 tp = (1*width//4-text_width//2, cy)
                 draw.text(tp, tmp, font=font, fill=(0, 255, 255))
 
-                #tmp = f'{round(fc["next"]["mintemp_c"])}C / {round(fc["next"]["maxtemp_c"])}C'
+                # Do the min/max temp for tomorrow
                 tmp = ""
                 if len(str(fc["next"]["mintemp_c"])):
                     tmp = f'{round(fc["next"]["mintemp_c"])}C'

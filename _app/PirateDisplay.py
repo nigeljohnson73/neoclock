@@ -34,6 +34,7 @@ height = 240
 image = Image.new("RGB", (width, width), (0, 0, 0))
 draw = ImageDraw.Draw(image)
 font_name = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
+font_locn = ImageFont.truetype(font_name, 22)
 font_temp = ImageFont.truetype(font_name, 16)
 font_date = ImageFont.truetype(font_name, 24)
 font_time = ImageFont.truetype(font_name, 64)
@@ -49,7 +50,9 @@ class PirateDisplay(NjDisplay):
         super().loop()
 
         global image, draw, width, height
-        draw.rectangle((0, 0, 240, 240), 0)
+        # background bluer if BT connected
+        bgcol = (0, 0, 52) if self.btConnected() else 0
+        draw.rectangle((0, 0, width, height), bgcol)
 
         # Show the delineation of the display
         if False:
@@ -66,15 +69,15 @@ class PirateDisplay(NjDisplay):
                            fill=(0, 0, 0), outline=lcol)
 
         # Bleutooth indicator
-        con = (255, 0, 0) if self.btConnected() else (0, 0, 0)
-        draw.ellipse((0, 0, 10, 10), fill=con, outline=(0, 255, 255))
+        # con = (255, 0, 0) if self.btConnected() else (0, 0, 0)
+        # draw.ellipse((0, 0, 10, 10), fill=con, outline=(0, 255, 255))
 
         t = datetime.datetime.now()
         tme = t.strftime("%H:%M")
         dte = t.strftime("%a %d %b %Y")
 
         # Time as large - cuz we have an HD display
-        cy = 120
+        cy = 140
         yo = 12
         font = font_time
         text_left, text_top, text_right, text_bottom = draw.textbbox(
@@ -96,11 +99,11 @@ class PirateDisplay(NjDisplay):
 
         fc = getForecast()
         if len(fc):
-            self.forecast_current_img = fc["now"]["condition_img"]
-            self.forecast_next_img = fc["next"]["condition_img"]
+            self.forecast_current_img = fc["now"].get("condition_img", None)
+            self.forecast_next_img = fc["next"].get("condition_img", None)
 
-            y = 10  # Image location
-            cy = 10+64+2  # Text location
+            y = 0  # Image location
+            cy = 0+64+2  # Text location
             if self.forecast_current_img:
                 x = int(1*image.width/4 - self.forecast_current_img.width/2)
                 image.paste(self.forecast_current_img,
@@ -111,7 +114,14 @@ class PirateDisplay(NjDisplay):
                 image.paste(self.forecast_next_img,
                             (x, y), self.forecast_next_img)
 
-            tmp = f'{round(fc["now"]["temp_c"])}C / {round(fc["now"]["humidity"])}%'
+            # Do the current temp/humidity
+            tmp = ""
+            if len(str(fc["now"]["temp_c"])):
+                tmp = f'{round(fc["now"]["temp_c"])}C'
+            if len(str(fc["now"]["humidity"])):
+                if len(tmp):
+                    tmp = f"{tmp} / "
+                tmp = f'{tmp}{round(fc["now"]["humidity"])}%'
             font = font_temp
             text_left, text_top, text_right, text_bottom = draw.textbbox(
                 (0, 0), text=tmp, font=font)
@@ -120,13 +130,30 @@ class PirateDisplay(NjDisplay):
             tp = (1*width//4-text_width//2, cy)
             draw.text(tp, tmp, font=font, fill=(0, 255, 255))
 
-            tmp = f'{round(fc["next"]["mintemp_c"])}C / {round(fc["next"]["maxtemp_c"])}C'
+            # Do the min/max temp for tomorrow
+            tmp = ""
+            if len(str(fc["next"]["mintemp_c"])):
+                tmp = f'{round(fc["next"]["mintemp_c"])}C'
+            if len(str(fc["next"]["maxtemp_c"])):
+                if len(tmp):
+                    tmp = f"{tmp} / "
+                tmp = f'{tmp}{round(fc["next"]["maxtemp_c"])}C'
             font = font_temp
             text_left, text_top, text_right, text_bottom = draw.textbbox(
                 (0, 0), text=tmp, font=font)
             text_width, text_height = (
                 text_right - text_left, text_bottom - text_top)
             tp = (3*width//4-text_width//2, cy)
+            draw.text(tp, tmp, font=font, fill=(0, 255, 255))
+
+            cy = 0+64+2+20
+            tmp = fc["location"]["name"]
+            font = font_locn
+            text_left, text_top, text_right, text_bottom = draw.textbbox(
+                (0, 0), text=tmp, font=font)
+            text_width, text_height = (
+                text_right - text_left, text_bottom - text_top)
+            tp = (width//2-text_width//2, cy)
             draw.text(tp, tmp, font=font, fill=(0, 255, 255))
 
         st7789.display(image)
