@@ -1,5 +1,6 @@
 import datetime
 import json
+from multiprocessing.pool import ApplyResult
 import os
 import os.path
 import time
@@ -120,7 +121,7 @@ class WeatherApi:
         self.stop()
 
     def stop(self):
-        print("WeatherApi::stop()")
+        AppLog.log("WeatherApi::stop()")
         global forecast
         self.thread.kill()
         self.thread.join()
