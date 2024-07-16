@@ -77,7 +77,7 @@ class DisplayPirate(DisplayBase):
         dte = t.strftime("%a %d %b %Y")
 
         # Time as large - cuz we have an HD display
-        cy = 140
+        cy = 165
         yo = 12
         font = font_time
         text_left, text_top, text_right, text_bottom = draw.textbbox(
@@ -146,7 +146,7 @@ class DisplayPirate(DisplayBase):
             tp = (3*width//4-text_width//2, cy)
             draw.text(tp, tmp, font=font, fill=(0, 255, 255))
 
-            cy = 0+64+2+30
+            cy = 0+64+2+35
             tmp = fc["location"]["name"]
             font = font_locn
             text_left, text_top, text_right, text_bottom = draw.textbbox(
