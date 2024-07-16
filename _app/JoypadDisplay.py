@@ -1,7 +1,7 @@
 import datetime
 from colorsys import hsv_to_rgb
 from PIL import Image, ImageDraw, ImageFont
-from _app.NjDisplay import NjDisplay
+from _app.DisplayBase import DisplayBase
 from _app.WeatherApi import getForecast
 
 '''
@@ -35,7 +35,7 @@ def setupModule():
     draw = ImageDraw.Draw(image)
 
 
-class JoypadDisplay(NjDisplay):
+class JoypadDisplay(DisplayBase):
     def __init__(self):
         super().__init__()
         setupModule()

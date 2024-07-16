@@ -1,7 +1,7 @@
 import os
 import datetime
 from PIL import Image, ImageDraw, ImageFont
-from _app.NjDisplay import NjDisplay
+from _app.DisplayBase import DisplayBase
 from _app.KillableThread import KillableThread
 from _app.WeatherApi import getForecast
 
@@ -124,7 +124,7 @@ processes the update loop in a backgound thread
 '''
 
 
-class EinkDisplay(NjDisplay):
+class EinkDisplay(DisplayBase):
     def __init__(self, multicolor=False):
         super().__init__()
         setupModule()

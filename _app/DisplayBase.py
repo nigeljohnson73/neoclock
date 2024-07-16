@@ -7,7 +7,7 @@ loop function
 '''
 
 
-class NjDisplay:
+class DisplayBase:
     def __init__(self):
         self.btConnected(False)
 
