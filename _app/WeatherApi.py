@@ -10,6 +10,7 @@ from _app.KillableThread import KillableThread
 
 forecast = {}
 
+
 def runApi(key, location):
     global forecast
 
@@ -18,7 +19,7 @@ def runApi(key, location):
         return
 
     print(f"WeatherApi: starting loop for '{location}'")
-    forecast = {"now":{}, "next":{}, "location":{}}
+    forecast = {"now": {}, "next": {}, "location": {}}
     forecast["valid"] = time.time()
     forecast["location"]["name"] = location
     forecast["now"]["temp_c"] = ""
@@ -37,7 +38,7 @@ def runApi(key, location):
 
     last_call = 0
     last_hour = -1
-    call_duration= 30
+    call_duration = 30
     while True:
 
         t = datetime.datetime.now().time()
@@ -49,28 +50,28 @@ def runApi(key, location):
             data = {}
 
             if h == last_hour and os.path.isfile(outfile):
-                print ("Loading Weather API stored data")
+                print("Loading Weather API stored data")
                 with open(outfile, 'r') as f:
                     data = json.load(f)
             else:
                 last_hour = h
-                print ("Making Weather API call")
+                print("Making Weather API call")
                 url = f"http://api.weatherapi.com/v1/forecast.json?key={key}&q={location}&days=1&aqi=yes&alerts=yes"
-                print(f"    {url}")
+                #print(f"    {url}")
                 response = requests.get(url, stream=True)
                 if response.ok:
-                    print(f"    Response good")
                     data = json.loads(response.content)
-
-                    with open(outfile,'w') as f:
-                        json.dump(data, f, sort_keys = True, indent = 4, ensure_ascii = True)
+                    with open(outfile, 'w') as f:
+                        json.dump(data, f, sort_keys=True,
+                                  indent=4, ensure_ascii=True)
+                    print(f"    Response good")
                 else:
                     print(f"    Response BAD")
 
-            print ("Weather API processing response")
-            #for key in data:
-                #print(key," : ",data[key]);
-            forecast = {"now":{}, "next":{}, "location":{}}
+            print("Weather API processing response")
+            # for key in data:
+            #print(key," : ",data[key]);
+            #forecast = {"now": {}, "next": {}, "location": {}}
             forecast["valid"] = time.time()
             forecast["location"]["name"] = data["location"]["name"]
             forecast["now"]["temp_c"] = data["current"]["temp_c"]
@@ -84,26 +85,34 @@ def runApi(key, location):
             forecast["next"]["maxtemp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
             forecast["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
             forecast["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
+            print("    data loaded")
             try:
-                forecast["now"]["condition_img"] = Image.open(requests.get(forecast["now"]["condition_icon"], verify=False, stream=True).raw)
+                forecast["now"]["condition_img"] = Image.open(requests.get(
+                    forecast["now"]["condition_icon"], verify=False, stream=True).raw)
+                print("    current img loaded")
             except:
                 forecast["now"]["condition_img"] = None
+                print("    current img broken")
             try:
-                forecast["next"]["condition_img"] = Image.open(requests.get(forecast["next"]["condition_icon"], verify=False, stream=True).raw)
+                forecast["next"]["condition_img"] = Image.open(requests.get(
+                    forecast["next"]["condition_icon"], verify=False, stream=True).raw)
+                print("    next img loaded")
             except:
                 forecast["next"]["condition_img"] = None
+                print("    next img broken")
 
-            print ("Weather API calls completed")
+            print("Weather API calls completed")
             #json_str = json.dumps(fc, indent=4)
-            #print(json_str)
-
+            # print(json_str)
 
         time.sleep(0.1)
     print(f"WeatherApi: finishing loop for '{location}'")
 
+
 def getForecast():
     global forecast
     return forecast
+
 
 class WeatherApi:
     def __init__(self, key, location):
