@@ -64,8 +64,8 @@ def drawEinkDisplay(display, multicolor):
     # Forecast images and text
     fc = getForecast()
     if len(fc):
-        forecast_current_img = fc["now"]["condition_img"]
-        forecast_next_img = fc["next"]["condition_img"]
+        forecast_current_img = fc["now"].get("condition_img", None)
+        forecast_next_img = fc["next"].get("condition_img", None)
 
         y = 0  # Image at the top of the screen (64px big)
         cy = 64  # Text directly under the image
@@ -78,7 +78,13 @@ def drawEinkDisplay(display, multicolor):
             y = 0
             imgb.paste(forecast_next_img, (x, y), forecast_next_img)
 
-        tmp = f'{round(fc["now"]["temp_c"])}C / {round(fc["now"]["humidity"])}%'
+        tmp = ""
+        if len(str(fc["now"]["temp_c"])):
+            tmp = f'{round(fc["now"]["temp_c"])}C'
+        if len(str(fc["now"]["humidity"])):
+            if len(tmp):
+                tmp = f"{tmp} / "
+            tmp = f'{tmp}{round(fc["now"]["humidity"])}%'
         font = font_temp
         text_left, text_top, text_right, text_bottom = drawb.textbbox(
             (0, 0), text=tmp, font=font)
@@ -87,7 +93,13 @@ def drawEinkDisplay(display, multicolor):
         tp = (1*width//4-text_width//2, cy)
         drawb.text(tp, tmp, font=font, fill=0)
 
-        tmp = f'{round(fc["next"]["mintemp_c"])}C / {round(fc["next"]["maxtemp_c"])}C'
+        tmp = ""
+        if len(str(fc["next"]["mintemp_c"])):
+            tmp = f'{round(fc["next"]["mintemp_c"])}C'
+        if len(str(fc["next"]["maxtemp_c"])):
+            if len(tmp):
+                tmp = f"{tmp} / "
+            tmp = f'{tmp}{round(fc["next"]["maxtemp_c"])}C'
         font = font_temp
         text_left, text_top, text_right, text_bottom = drawb.textbbox(
             (0, 0), text=tmp, font=font)
