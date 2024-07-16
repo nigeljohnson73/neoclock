@@ -1,6 +1,8 @@
 # Neo-clock
 I have a few Raspberry Pi zero W's lying about the place and some LED strips from an old WLED project, and that's why we can't have anything nice.
 
+Oh, Python is not my first langfuage, and we are in a pretty rough place relationship wise, so please bear with us while we work through our differences.
+
 ## Hardware
 While the LED strips will run from the PI power rails, my OCD would not let me use the USB socket on the PI Zero W as it was too off-centre... so I added a USB-C socket to the mix. How you wire up your PI is on you. The only real 'need' is to run the LED data line from GPIO 18 in code, but you can even change this. As well as your PI, and wires. You will need an LED strip. I use the 144/m strip as it makes the whole face printable on a single print bed.
 
