@@ -133,7 +133,7 @@ def bt_handleData(data):
         weather_api_choice = -1
         nextLocation("config")
     elif bits[0] == "log":
-        bt_server.send(AppLog())
+        bt_server.send(AppLog.toStr())
     else:
         bt_server.send(f"NO\n")
 
