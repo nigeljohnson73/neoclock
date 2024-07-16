@@ -69,8 +69,8 @@ class JoypadDisplay(NjDisplay):
 
             fc = getForecast()
             if len(fc):
-                self.forecast_current_img = fc["now"]["condition_img"]
-                self.forecast_next_img = fc["next"]["condition_img"]
+                self.forecast_current_img = fc["now"].get("condition_img", None)
+                self.forecast_next_img = fc["next"].get("condition_img", None)
 
                 y = 0  # (image.height - self.forecast_next_img.height) // 2
                 cy = 0+64+2

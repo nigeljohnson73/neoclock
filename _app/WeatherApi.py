@@ -78,22 +78,20 @@ def runApi(key, location):
             forecast["now"]["humidity"] = data["current"]["humidity"]
             forecast["now"]["condition_text"] = data["current"]["condition"]["text"]
             forecast["now"]["condition_icon"] = f'http:{data["current"]["condition"]["icon"]}'
-            forecast["now"]["condition_img"] = None
             forecast["next"]["mintemp_c"] = data["forecast"]["forecastday"][0]["day"]["mintemp_c"]
             forecast["next"]["mintemp_f"] = data["forecast"]["forecastday"][0]["day"]["mintemp_f"]
             forecast["next"]["maxtemp_c"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
             forecast["next"]["maxtemp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
             forecast["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
             forecast["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
-            forecast["next"]["condition_img"] = None
             try:
                 forecast["now"]["condition_img"] = Image.open(requests.get(forecast["now"]["condition_icon"], verify=False, stream=True).raw)
             except:
-                pass
+                forecast["now"]["condition_img"] = None
             try:
                 forecast["next"]["condition_img"] = Image.open(requests.get(forecast["next"]["condition_icon"], verify=False, stream=True).raw)
             except:
-                pass
+                forecast["next"]["condition_img"] = None
 
             print ("Weather API calls completed")
             #json_str = json.dumps(fc, indent=4)
