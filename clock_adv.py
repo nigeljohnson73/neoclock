@@ -11,6 +11,7 @@ from _app.DisplayPirate import DisplayPirate
 from _app.DisplayEink import DisplayEink
 from _app.DisplayJoypad import DisplayJoypad
 from _app.WeatherApi import WeatherApi
+from _app.AppLog import AppLog
 
 config_fn = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), 'config.json')
@@ -131,16 +132,20 @@ def bt_handleData(data):
         writeConfig()
         weather_api_choice = -1
         nextLocation("config")
+    elif bits[0] == "log":
+        bt_server.send(AppLog())
     else:
         bt_server.send(f"NO\n")
 
 
 def bt_handleConnect():
     global bt_adapter
-    print(f"bluetooth connect")
+    # print(f"bluetooth connect")
+    AppLog.log(f"bluetooth connect")
     devices = bt_adapter.paired_devices
     for d in devices:
         print(f"    connect: '{d}'")
+        AppLog.log(f"    connect: '{d}'")
     bt_server.send("wapi-k::KEY - Weather API key\n")
     bt_server.send("wapi-l::LOC - Weather API location\n")
     bt_server.send("ip - shows the network IP\n")
@@ -152,7 +157,8 @@ def bt_handleConnect():
 
 def bt_handleDisconnect():
     global bt_adapter, bt_server
-    print(f"bluetooth disconnect")
+    # print(f"bluetooth disconnect")
+    AppLog.log(f"bluetooth disconnect")
     if display:
         display.btConnected(False)
 
@@ -161,20 +167,23 @@ def bt_handleDisconnect():
 # handle button pressing for now. TODO: move this somewhere else
 def nextLocation(label):
     global weather_api, weather_api_key, weather_api_location, weather_api_choice
-    print(f"{label} pressed - nextLocation()")
+    # print(f"{label} pressed - nextLocation()")
+    AppLog.log(f"{label} pressed - nextLocation()")
 
     weather_api = None
     choices = []
     bits = weather_api_location.strip().split(",")
     for i in bits:
         if len(i.strip()):
-            print(f"    Adding location choice '{i}'")
+            # print(f"    Adding location choice '{i}'")
+            AppLog.log(f"    Adding location choice '{i}'")
             choices.append(i)
     if len(choices):
         weather_api_choice = weather_api_choice + 1
         if weather_api_choice >= len(choices):
             weather_api_choice = 0
-        print(f"    Choice '{choices[weather_api_choice]}'")
+        # print(f"    Choice '{choices[weather_api_choice]}'")
+        AppLog.log(f"    Choice '{choices[weather_api_choice]}'")
         weather_api = WeatherApi(weather_api_key, choices[weather_api_choice])
 
 
@@ -201,7 +210,8 @@ def setup():
             weather_api_key = data["weather_api_key"]
             weather_api_location = data["weather_api_location"]
     except:
-        print("No config loaded")
+        # print("No config loaded")
+        AppLog.log("No config loaded")
 
     # If we have a known package, set that up
     if package == "InkyR":
@@ -227,11 +237,13 @@ def setup():
                    NjButton(board.D13, func_press=buttonPressed, label="CT"),
                    ]
 
-    print("Enabling Bluetooth agent")
+    # print("Enabling Bluetooth agent")
+    AppLog.log("Enabling Bluetooth agent")
     bt_adapter = BluetoothAdapter()
     bt_adapter.allow_pairing(timeout=None)
 
-    print("Creating Bluetooth server")
+    # print("Creating Bluetooth server")
+    AppLog.log("Creating Bluetooth server")
     bt_server = BluetoothServer(
         power_up_device=True,
         when_client_connects=bt_handleConnect,
@@ -282,6 +294,7 @@ try:
 
 
 except KeyboardInterrupt:
-    print("Exiting nicely")
+    # print("Exiting nicely")
+    AppLog.log("Exiting nicely")
     display = None
     weather_api = None
