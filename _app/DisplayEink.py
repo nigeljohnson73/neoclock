@@ -23,7 +23,7 @@ def setupModule():
     if epd != None:
         return
 
-    print("EinkDisplay::setupModule()")
+    print("DisplayEink::setupModule()")
     from _app.epd2in13b_V4 import EPD
     epd = EPD()
 
@@ -124,16 +124,16 @@ processes the update loop in a backgound thread
 '''
 
 
-class EinkDisplay(DisplayBase):
+class DisplayEink(DisplayBase):
     def __init__(self, multicolor=False):
         super().__init__()
         setupModule()
-        print(f"EinkDisplay::EinkDisplay(multicolor: {multicolor})")
+        print(f"DisplayEink::DisplayEink(multicolor: {multicolor})")
         self.multicolor = multicolor
         self.last_minute = -1
 
     def __del__(self):
-        print("EinkDisplay::~EinkDisplay()")
+        print("DisplayEink::~DisplayEink()")
         self.thread.kill()
         self.thread.join()
 
@@ -143,7 +143,7 @@ class EinkDisplay(DisplayBase):
         t = datetime.datetime.now().time()
         if self.last_minute != t.minute:
             self.last_minute = t.minute
-            print("EinkDisplay::loop()")
+            print("DisplayEink::loop()")
             self.thread = KillableThread(
                 target=drawEinkDisplay, args=(self, self.multicolor,))
             self.thread.start()

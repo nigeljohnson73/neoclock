@@ -7,9 +7,9 @@ import neopixel
 import board
 from bluedot.btcomm import BluetoothServer, BluetoothAdapter
 from _app.NjButton import NjButton
-from _app.PirateDisplay import PirateDisplay
-from _app.EinkDisplay import EinkDisplay
-from _app.JoypadDisplay import JoypadDisplay
+from _app.DisplayPirate import DisplayPirate
+from _app.DisplayEink import DisplayEink
+from _app.DisplayJoypad import DisplayJoypad
 from _app.WeatherApi import WeatherApi
 
 config_fn = os.path.join(os.path.dirname(
@@ -120,8 +120,8 @@ def bt_handleData(data):
             weather_api.stop()
         weather_api = None
         writeConfig()
-        weather_api_choice = -1;
-        pageOnce("config")
+        weather_api_choice = -1
+        nextLocation("config")
     elif bits[0] == "wapi-k":
         bt_server.send("OK\n")
         weather_api_key = bits[1]
@@ -129,8 +129,8 @@ def bt_handleData(data):
             weather_api.stop()
         weather_api = None
         writeConfig()
-        weather_api_choice = -1;
-        pageOnce("config")
+        weather_api_choice = -1
+        nextLocation("config")
     else:
         bt_server.send(f"NO\n")
 
@@ -161,20 +161,20 @@ def bt_handleDisconnect():
 # handle button pressing for now. TODO: move this somewhere else
 def nextLocation(label):
     global weather_api, weather_api_key, weather_api_location, weather_api_choice
-    print(f"{label} pressed")
+    print(f"{label} pressed - nextLocation()")
 
     weather_api = None
     choices = []
     bits = weather_api_location.strip().split(",")
     for i in bits:
         if len(i.strip()):
-            print (f"    Adding location choice '{i}'")
+            print(f"    Adding location choice '{i}'")
             choices.append(i)
     if len(choices):
         weather_api_choice = weather_api_choice + 1
         if weather_api_choice >= len(choices):
-                weather_api_choice = 0
-        print (f"    Choice '{choices[weather_api_choice]}'")
+            weather_api_choice = 0
+        print(f"    Choice '{choices[weather_api_choice]}'")
         weather_api = WeatherApi(weather_api_key, choices[weather_api_choice])
 
 
@@ -205,18 +205,18 @@ def setup():
 
     # If we have a known package, set that up
     if package == "InkyR":
-        display = EinkDisplay(multicolor=True)
+        display = DisplayEink(multicolor=True)
     elif package == "Inky":
-        display = EinkDisplay()
+        display = DisplayEink()
     elif package == "Pirate":
-        display = PirateDisplay()
+        display = DisplayPirate()
         buttons = [NjButton(board.D5, func_press=nextLocation, label="A"),
                    NjButton(board.D6, func_press=buttonPressed, label="B"),
                    NjButton(board.D16, func_press=buttonPressed, label="X"),
                    NjButton(board.D24, func_press=buttonPressed, label="Y"),
                    ]
     elif package == "Joypad":
-        display = JoypadDisplay()
+        display = DisplayJoypad()
         buttons = [NjButton(board.D21, func_press=buttonPressed, label="KEY1"),
                    NjButton(board.D20, func_press=buttonPressed, label="KEY2"),
                    NjButton(board.D16, func_press=nextLocation, label="KEY3"),

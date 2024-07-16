@@ -21,7 +21,7 @@ def setupModule():
     if disp != None:
         return
 
-    print("JoypadDisplay::setupModule()")
+    print("DisplayJoypad::setupModule()")
 
     import _app.LCD_1in44 as LCD_1in44
     disp = LCD_1in44.LCD()
@@ -35,11 +35,11 @@ def setupModule():
     draw = ImageDraw.Draw(image)
 
 
-class JoypadDisplay(DisplayBase):
+class DisplayJoypad(DisplayBase):
     def __init__(self):
         super().__init__()
         setupModule()
-        print(f"JoypadDisplay::JoypadDisplay(({width}, {height}))")
+        print(f"DisplayJoypad::DisplayJoypad(({width}, {height}))")
 
     def loop(self):
         super().loop()

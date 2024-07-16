@@ -40,10 +40,10 @@ font_date = ImageFont.truetype(font_name, 24)
 font_time = ImageFont.truetype(font_name, 64)
 
 
-class PirateDisplay(DisplayBase):
+class DisplayPirate(DisplayBase):
     def __init__(self):
         super().__init__()
-        print(f"PirateDisplay::PirateDisplay(({width},{height}))")
+        print(f"DisplayPirate::DisplayPirate(({width},{height}))")
         setupModule()
 
     def loop(self):
