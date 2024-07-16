@@ -95,6 +95,18 @@ def writeConfig():
     pass
 
 
+def readConfig():
+    global package, weather_api_key, weather_api_location
+    try:
+        with open(config_fn, 'r') as f:
+            data = json.load(f)
+            package = data["package"]
+            weather_api_key = data["weather_api_key"]
+            weather_api_location = data["weather_api_location"]
+    except:
+        AppLog.log("No config loaded")
+
+
 ###########################################################################################
 # Bleutooth connection handling malary: TODO: move this soemwhere else
 def bt_handleData(data):
@@ -105,15 +117,20 @@ def bt_handleData(data):
     print(f"data: '{bits}'")
     if bits[0] == "pong":
         bt_server.send("pong\n")
+
     elif bits[0] == "time":
         bt_server.send("OK\n")
         subprocess.call(['sudo', 'date', '-s', bits[1]], shell=False)
+
     elif bits[0] == "wifi":
         bt_server.send("OK-REBOOT\n")
         writeWpa(ssid=bits[2], psk=bits[3], country=bits[1], exec=True)
+
     elif bits[0] == "ip":
         ip = getIpAddress()
+        bt_server.send("OK\n")
         bt_server.send(f"{ip}\n")
+
     elif bits[0] == "wapi-l":
         bt_server.send("OK\n")
         weather_api_location = bits[1]
@@ -123,6 +140,7 @@ def bt_handleData(data):
         writeConfig()
         weather_api_choice = -1
         nextLocation("config")
+
     elif bits[0] == "wapi-k":
         bt_server.send("OK\n")
         weather_api_key = bits[1]
@@ -132,8 +150,11 @@ def bt_handleData(data):
         writeConfig()
         weather_api_choice = -1
         nextLocation("config")
+
     elif bits[0] == "log":
+        bt_server.send("OK\n")
         bt_server.send(AppLog.toStr())
+
     else:
         bt_server.send(f"NO\n")
 
@@ -157,7 +178,6 @@ def bt_handleConnect():
 
 def bt_handleDisconnect():
     global bt_adapter, bt_server
-    # print(f"bluetooth disconnect")
     AppLog.log(f"bluetooth disconnect")
     if display:
         display.btConnected(False)
@@ -167,7 +187,6 @@ def bt_handleDisconnect():
 # handle button pressing for now. TODO: move this somewhere else
 def nextLocation(label):
     global weather_api, weather_api_key, weather_api_location, weather_api_choice
-    # print(f"{label} pressed - nextLocation()")
     AppLog.log(f"{label} pressed - nextLocation()")
 
     weather_api = None
@@ -175,14 +194,14 @@ def nextLocation(label):
     bits = weather_api_location.strip().split(",")
     for i in bits:
         if len(i.strip()):
-            # print(f"    Adding location choice '{i}'")
             AppLog.log(f"    Adding location choice '{i}'")
             choices.append(i)
+
     if len(choices):
         weather_api_choice = weather_api_choice + 1
         if weather_api_choice >= len(choices):
             weather_api_choice = 0
-        # print(f"    Choice '{choices[weather_api_choice]}'")
+
         AppLog.log(f"    Choice '{choices[weather_api_choice]}'")
         weather_api = WeatherApi(weather_api_key, choices[weather_api_choice])
 
@@ -202,16 +221,7 @@ def setup():
     global display, buttons, package, bt_adapter, bt_server
     global weather_api, weather_api_key, weather_api_location
 
-    # try loading the config
-    try:
-        with open(config_fn, 'r') as f:
-            data = json.load(f)
-            package = data["package"]
-            weather_api_key = data["weather_api_key"]
-            weather_api_location = data["weather_api_location"]
-    except:
-        # print("No config loaded")
-        AppLog.log("No config loaded")
+    readConfig()
 
     # If we have a known package, set that up
     if package == "InkyR":
@@ -237,12 +247,10 @@ def setup():
                    NjButton(board.D13, func_press=buttonPressed, label="CT"),
                    ]
 
-    # print("Enabling Bluetooth agent")
     AppLog.log("Enabling Bluetooth agent")
     bt_adapter = BluetoothAdapter()
     bt_adapter.allow_pairing(timeout=None)
 
-    # print("Creating Bluetooth server")
     AppLog.log("Creating Bluetooth server")
     bt_server = BluetoothServer(
         power_up_device=True,
@@ -252,8 +260,6 @@ def setup():
     )
 
     nextLocation("setup")
-    #print("Creating WeatherApi service")
-    #weather_api = WeatherApi(weather_api_key, weather_api_location)
 
 
 def buttonLoop():
@@ -281,16 +287,16 @@ def loop():
 
 ###########################################################################################
 # And the main attraction
-last_s = 999
+# last_s = 999
 setup()
 try:
     while True:
         loop()
 
-        t = datetime.datetime.now().time()
-        if last_s != t.second:
-            last_s = t.second
-            print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}")
+        # t = datetime.datetime.now().time()
+        # if last_s != t.second:
+        #     last_s = t.second
+        #     print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}")
 
 
 except KeyboardInterrupt:

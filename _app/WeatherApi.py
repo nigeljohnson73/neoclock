@@ -3,10 +3,10 @@ import json
 import os
 import os.path
 import time
-import threading
 import requests
 from PIL import Image
 from _app.KillableThread import KillableThread
+from _app.AppLog import AppLog
 
 forecast = {}
 
@@ -15,10 +15,10 @@ def runApi(key, location):
     global forecast
 
     if len(key) == 0 or len(location) == 0:
-        print("WeatherApi: Skipping no configuration")
+        print("WeatherApi::runApi(): Skipping no configuration")
         return
 
-    print(f"WeatherApi: starting loop for '{location}'")
+    AppLog.log(f"WeatherApi::runApi(): Starting calls for '{location}'")
     forecast = {"now": {}, "next": {}, "location": {}}
     forecast["valid"] = time.time()
     forecast["location"]["name"] = location
@@ -50,12 +50,13 @@ def runApi(key, location):
             data = {}
 
             if h == last_hour and os.path.isfile(outfile):
-                print("Loading Weather API stored data")
+                AppLog.log(
+                    "WeatherApi::runApi(): Loading stored data")
                 with open(outfile, 'r') as f:
                     data = json.load(f)
             else:
                 last_hour = h
-                print("Making Weather API call")
+                AppLog.log("WeatherApi::runApi(): Making API call")
                 url = f"http://api.weatherapi.com/v1/forecast.json?key={key}&q={location}&days=1&aqi=yes&alerts=yes"
                 #print(f"    {url}")
                 response = requests.get(url, stream=True)
@@ -64,14 +65,11 @@ def runApi(key, location):
                     with open(outfile, 'w') as f:
                         json.dump(data, f, sort_keys=True,
                                   indent=4, ensure_ascii=True)
-                    print(f"    Response good")
+                    AppLog.log(f"WeatherApi::runApi():    Response good")
                 else:
-                    print(f"    Response BAD")
+                    AppLog.log(f"WeatherApi::runApi():    Response BAD")
 
-            print("Weather API processing response")
-            # for key in data:
-            #print(key," : ",data[key]);
-            #forecast = {"now": {}, "next": {}, "location": {}}
+            AppLog.log("WeatherApi::runApi(): processing response")
             forecast["valid"] = time.time()
             forecast["location"]["name"] = data["location"]["name"]
             forecast["now"]["temp_c"] = data["current"]["temp_c"]
@@ -85,28 +83,25 @@ def runApi(key, location):
             forecast["next"]["maxtemp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
             forecast["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
             forecast["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
-            print("    data loaded")
+            AppLog.log("WeatherApi::runApi():    data loaded")
             try:
                 forecast["now"]["condition_img"] = Image.open(requests.get(
                     forecast["now"]["condition_icon"], verify=False, stream=True).raw)
-                print("    current img loaded")
+                AppLog.log("WeatherApi::runApi():    current img loaded")
             except:
                 forecast["now"]["condition_img"] = None
-                print("    current img broken")
+                AppLog.log("WeatherApi::runApi():    current img broken")
             try:
                 forecast["next"]["condition_img"] = Image.open(requests.get(
                     forecast["next"]["condition_icon"], verify=False, stream=True).raw)
-                print("    next img loaded")
+                AppLog.log("WeatherApi::runApi():    next img loaded")
             except:
                 forecast["next"]["condition_img"] = None
-                print("    next img broken")
+                AppLog.log("WeatherApi::runApi():    next img broken")
 
-            print("Weather API calls completed")
-            #json_str = json.dumps(fc, indent=4)
-            # print(json_str)
+            AppLog.log("WeatherApi::runApi(): API completed")
 
-        time.sleep(0.1)
-    print(f"WeatherApi: finishing loop for '{location}'")
+        # time.sleep(0.01)
 
 
 def getForecast():
@@ -116,17 +111,17 @@ def getForecast():
 
 class WeatherApi:
     def __init__(self, key, location):
-        #self.thread = threading.Thread(target=runApi, args=(key, location,))
+        print("WeatherApi::WeatherApi()")
         self.thread = KillableThread(target=runApi, args=(key, location,))
         self.thread.start()
 
     def __del__(self):
-        print("WeatherApi::__del__()")
+        print("WeatherApi::~WeatherApi()")
         self.stop()
 
     def stop(self):
         print("WeatherApi::stop()")
         global forecast
-        forecast = {}
         self.thread.kill()
         self.thread.join()
+        forecast = {}

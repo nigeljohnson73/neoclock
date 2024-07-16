@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from _app.DisplayBase import DisplayBase
 from _app.KillableThread import KillableThread
 from _app.WeatherApi import getForecast
+from _app.AppLog import AppLog
 
 
 '''
@@ -23,7 +24,7 @@ def setupModule():
     if epd != None:
         return
 
-    print("DisplayEink::setupModule()")
+    AppLog.log("DisplayEink::setupModule()")
     from _app.epd2in13b_V4 import EPD
     epd = EPD()
 
@@ -31,14 +32,15 @@ def setupModule():
 def drawEinkDisplay(display, multicolor):
     global epd, display_updating
     if display_updating:
-        print(f"drawEinkDisplay(): Skipping double update")
+        AppLog.log(f"DisplayEink::drawEinkDisplay(): Skipping double update")
         return
 
     display_updating = True
     epd.init()
     width = epd.height  # for some reason the directions are reversed
     height = epd.width
-    print(f"drawEinkDisplay(({width}, {height}), multicolor: {multicolor})")
+    AppLog.log(
+        f"DisplayEink::drawEinkDisplay(({width}, {height}), multicolor: {multicolor})")
 
     # Create a the black and contrast images. Basically the same image if mono screen
     imgb = Image.new('1', (width, height), 255)  # 250*122
@@ -46,10 +48,10 @@ def drawEinkDisplay(display, multicolor):
     drawb = ImageDraw.Draw(imgb)
     drawc = ImageDraw.Draw(imgc) if multicolor else drawb
 
-    # Bluetooth connection indicator - useless for e-ink - delete this shortly
-    drawb.arc((0, 0, 10, 10),  0, 360, fill=0)
-    if display.btConnected():
-        drawc.ellipse((1, 1, 9, 9), fill=0)
+    # # Bluetooth connection indicator - useless for e-ink - delete this shortly
+    # drawb.arc((0, 0, 10, 10),  0, 360, fill=0)
+    # if display.btConnected():
+    #     drawc.ellipse((1, 1, 9, 9), fill=0)
 
     # Draw the date near the bottom of the dispaly
     t = datetime.datetime.now()
@@ -128,12 +130,12 @@ class DisplayEink(DisplayBase):
     def __init__(self, multicolor=False):
         super().__init__()
         setupModule()
-        print(f"DisplayEink::DisplayEink(multicolor: {multicolor})")
+        AppLog.log(f"DisplayEink::DisplayEink(multicolor: {multicolor})")
         self.multicolor = multicolor
         self.last_minute = -1
 
     def __del__(self):
-        print("DisplayEink::~DisplayEink()")
+        AppLog.log("DisplayEink::~DisplayEink()")
         self.thread.kill()
         self.thread.join()
 
@@ -143,7 +145,7 @@ class DisplayEink(DisplayBase):
         t = datetime.datetime.now().time()
         if self.last_minute != t.minute:
             self.last_minute = t.minute
-            print("DisplayEink::loop()")
+            AppLog.log("DisplayEink::loop()")
             self.thread = KillableThread(
                 target=drawEinkDisplay, args=(self, self.multicolor,))
             self.thread.start()

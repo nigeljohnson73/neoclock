@@ -1,4 +1,6 @@
+from multiprocessing.pool import ApplyResult
 import time
+from _app.AppLog import AppLog
 import digitalio
 
 '''
@@ -20,7 +22,8 @@ class NjButton():
         self.last_state = self.state
         self.last_state_time = time.time()
 
-        print(f"NjButton::NjButton({self.label}): state: {self.state}")
+        # print(f"NjButton::NjButton({self.label}): state: {self.state}")
+        AppLog.log(f"NjButton::NjButton({self.label})")
 
     def loop(self):
         self.state = self.button.value

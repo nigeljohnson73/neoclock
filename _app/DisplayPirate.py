@@ -3,10 +3,8 @@ from PIL import Image, ImageDraw, ImageFont
 from st7789 import ST7789
 from _app.DisplayBase import DisplayBase
 from _app.WeatherApi import getForecast
-
-from io import BytesIO
+from _app.AppLog import AppLog
 from PIL import Image
-import requests
 
 st7789 = False
 
@@ -15,6 +13,8 @@ def setupModule():
     global st7789
     if st7789 != False:
         return
+
+    AppLog.log("DisplayPirate::setupModule()")
 
     from st7789 import ST7789
 
@@ -43,7 +43,7 @@ font_time = ImageFont.truetype(font_name, 64)
 class DisplayPirate(DisplayBase):
     def __init__(self):
         super().__init__()
-        print(f"DisplayPirate::DisplayPirate(({width},{height}))")
+        AppLog.log(f"DisplayPirate::DisplayPirate(({width},{height}))")
         setupModule()
 
     def loop(self):

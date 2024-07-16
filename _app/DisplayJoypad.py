@@ -3,6 +3,7 @@ from colorsys import hsv_to_rgb
 from PIL import Image, ImageDraw, ImageFont
 from _app.DisplayBase import DisplayBase
 from _app.WeatherApi import getForecast
+from _app.AppLog import AppLog
 
 '''
 Stop clashes of setups by only setting this module up if it's needed
@@ -21,7 +22,7 @@ def setupModule():
     if disp != None:
         return
 
-    print("DisplayJoypad::setupModule()")
+    AppLog.log("DisplayJoypad::setupModule()")
 
     import _app.LCD_1in44 as LCD_1in44
     disp = LCD_1in44.LCD()
