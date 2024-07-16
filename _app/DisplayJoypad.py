@@ -40,7 +40,7 @@ class DisplayJoypad(DisplayBase):
     def __init__(self):
         super().__init__()
         setupModule()
-        print(f"DisplayJoypad::DisplayJoypad(({width}, {height}))")
+        AppLog.log(f"DisplayJoypad::DisplayJoypad(({width}, {height}))")
 
     def loop(self):
         super().loop()

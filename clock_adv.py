@@ -15,7 +15,6 @@ from _app.AppLog import AppLog
 
 config_fn = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), 'config.json')
-print(f"Config: '{config_fn}'")
 
 ###########################################################################################
 # Neopixel gear
@@ -84,6 +83,8 @@ def setPixel(n, mult, arr):
 # Write out the current config
 def writeConfig():
     global config_fn, package, weather_api_key, weather_api_location
+
+    AppLog.log(f"App::writeConfig('{config_fn}')")
     data = {
         "package": package,
         "weather_api_key": weather_api_key,
@@ -96,15 +97,22 @@ def writeConfig():
 
 
 def readConfig():
-    global package, weather_api_key, weather_api_location
+    global config_fn, package, weather_api_key, weather_api_location
+
+    AppLog.log(f"App::readConfig('{config_fn}')")
     try:
         with open(config_fn, 'r') as f:
             data = json.load(f)
             package = data["package"]
             weather_api_key = data["weather_api_key"]
             weather_api_location = data["weather_api_location"]
+        wak = "[REDACTED]" if len(weather_api_key) else "[BLANK]"
+        AppLog.log(f"App::readConfig():     package: {package}")
+        AppLog.log(f"App::readConfig():     weather_api_key: {wak}")
+        AppLog.log(
+            f"App::readConfig():     weather_api_location: {weather_api_location}")
     except:
-        AppLog.log("No config loaded")
+        AppLog.log(f"App::readConfig(): configuration failed to load")
 
 
 ###########################################################################################
@@ -121,10 +129,14 @@ def bt_handleData(data):
     elif bits[0] == "time":
         bt_server.send("OK\n")
         subprocess.call(['sudo', 'date', '-s', bits[1]], shell=False)
+        AppLog.log(f"Bluetooth::handleData(): setDate('{bits[1]}')")
 
     elif bits[0] == "wifi":
         bt_server.send("OK-REBOOT\n")
         writeWpa(ssid=bits[2], psk=bits[3], country=bits[1], exec=True)
+        psk = "[REDACTED]" if len(bits[3]) else "[BLANK]"
+        AppLog.log(
+            f"Bluetooth::handleData(): setWifi('{bits[1]}', '{bits[2]}, '{psk}')")
 
     elif bits[0] == "ip":
         ip = getIpAddress()
@@ -137,6 +149,8 @@ def bt_handleData(data):
         if weather_api:
             weather_api.stop()
         weather_api = None
+        AppLog.log(f"Bluetooth::handleData(): setLocation('{bits[1]}')")
+
         writeConfig()
         weather_api_choice = -1
         nextLocation("config")
@@ -147,6 +161,9 @@ def bt_handleData(data):
         if weather_api:
             weather_api.stop()
         weather_api = None
+        wak = "[REDACTED]" if len(weather_api_key) else "[BLANK]"
+        AppLog.log(f"Bluetooth::handleData(): setKey('{wak}')")
+
         writeConfig()
         weather_api_choice = -1
         nextLocation("config")
@@ -162,15 +179,15 @@ def bt_handleData(data):
 def bt_handleConnect():
     global bt_adapter
     # print(f"bluetooth connect")
-    AppLog.log(f"bluetooth connect")
+    AppLog.log(f"Bluetooth::handleConnect()")
     devices = bt_adapter.paired_devices
     for d in devices:
-        print(f"    connect: '{d}'")
+        # print(f"    connect: '{d}'")
         AppLog.log(f"    connect: '{d}'")
-    bt_server.send("wapi-k::KEY - Weather API key\n")
-    bt_server.send("wapi-l::LOC - Weather API location\n")
     bt_server.send("ip - shows the network IP\n")
     bt_server.send("time::YYYY-MM-DD HH:II:SS - Set time\n")
+    bt_server.send("wapi-k::KEY - Weather API key\n")
+    bt_server.send("wapi-l::LOC - Weather API location\n")
     bt_server.send("wifi::CC::SSID::PSK - Set WiFi config\n")
     if display:
         display.btConnected(True)
@@ -178,7 +195,7 @@ def bt_handleConnect():
 
 def bt_handleDisconnect():
     global bt_adapter, bt_server
-    AppLog.log(f"bluetooth disconnect")
+    AppLog.log(f"Bluetooth::handleDisconnect()")
     if display:
         display.btConnected(False)
 
@@ -187,7 +204,7 @@ def bt_handleDisconnect():
 # handle button pressing for now. TODO: move this somewhere else
 def nextLocation(label):
     global weather_api, weather_api_key, weather_api_location, weather_api_choice
-    AppLog.log(f"{label} pressed - nextLocation()")
+    AppLog.log(f"handleButton('{label}'): nextLocation()")
 
     weather_api = None
     choices = []
@@ -202,7 +219,7 @@ def nextLocation(label):
         if weather_api_choice >= len(choices):
             weather_api_choice = 0
 
-        AppLog.log(f"    Choice '{choices[weather_api_choice]}'")
+        AppLog.log(f"    Using '{choices[weather_api_choice]}'")
         weather_api = WeatherApi(weather_api_key, choices[weather_api_choice])
 
 
@@ -221,6 +238,7 @@ def setup():
     global display, buttons, package, bt_adapter, bt_server
     global weather_api, weather_api_key, weather_api_location
 
+    AppLog.log(f"App::setup()")
     readConfig()
 
     # If we have a known package, set that up
@@ -247,11 +265,11 @@ def setup():
                    NjButton(board.D13, func_press=buttonPressed, label="CT"),
                    ]
 
-    AppLog.log("Enabling Bluetooth agent")
+    AppLog.log("App::setup(): Enabling Bluetooth agent")
     bt_adapter = BluetoothAdapter()
     bt_adapter.allow_pairing(timeout=None)
 
-    AppLog.log("Creating Bluetooth server")
+    AppLog.log("App::setup(): Creating Bluetooth server")
     bt_server = BluetoothServer(
         power_up_device=True,
         when_client_connects=bt_handleConnect,
@@ -287,20 +305,12 @@ def loop():
 
 ###########################################################################################
 # And the main attraction
-# last_s = 999
 setup()
 try:
     while True:
         loop()
 
-        # t = datetime.datetime.now().time()
-        # if last_s != t.second:
-        #     last_s = t.second
-        #     print(f"time: {t.hour:02d}:{t.minute:02d}:{t.second:02d}")
-
-
 except KeyboardInterrupt:
-    # print("Exiting nicely")
-    AppLog.log("Exiting nicely")
+    AppLog.log("App::quit(): Exiting nicely")
     display = None
     weather_api = None

@@ -111,12 +111,12 @@ def getForecast():
 
 class WeatherApi:
     def __init__(self, key, location):
-        print("WeatherApi::WeatherApi()")
+        AppLog.log("WeatherApi::WeatherApi()")
         self.thread = KillableThread(target=runApi, args=(key, location,))
         self.thread.start()
 
     def __del__(self):
-        print("WeatherApi::~WeatherApi()")
+        AppLog.log("WeatherApi::~WeatherApi()")
         self.stop()
 
     def stop(self):
