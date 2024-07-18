@@ -67,38 +67,39 @@ def runApi(key, location):
                         json.dump(data, f, sort_keys=True,
                                   indent=4, ensure_ascii=True)
                     AppLog.log(f"WeatherApi::runApi():    Response good")
+
+                    AppLog.log("WeatherApi::runApi(): processing response")
+                    forecast["valid"] = time.time()
+                    forecast["location"]["name"] = data["location"]["name"]
+                    forecast["now"]["temp_c"] = data["current"]["temp_c"]
+                    forecast["now"]["temp_f"] = data["current"]["temp_f"]
+                    forecast["now"]["humidity"] = data["current"]["humidity"]
+                    forecast["now"]["condition_text"] = data["current"]["condition"]["text"]
+                    forecast["now"]["condition_icon"] = f'http:{data["current"]["condition"]["icon"]}'
+                    forecast["next"]["mintemp_c"] = data["forecast"]["forecastday"][0]["day"]["mintemp_c"]
+                    forecast["next"]["mintemp_f"] = data["forecast"]["forecastday"][0]["day"]["mintemp_f"]
+                    forecast["next"]["maxtemp_c"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
+                    forecast["next"]["maxtemp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
+                    forecast["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
+                    forecast["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
+                    AppLog.log("WeatherApi::runApi():    data loaded")
+                    try:
+                        forecast["now"]["condition_img"] = Image.open(requests.get(
+                            forecast["now"]["condition_icon"], verify=False, stream=True).raw)
+                        AppLog.log("WeatherApi::runApi():    current img loaded")
+                    except:
+                        forecast["now"]["condition_img"] = None
+                        AppLog.log("WeatherApi::runApi():    current img broken")
+                    try:
+                        forecast["next"]["condition_img"] = Image.open(requests.get(
+                            forecast["next"]["condition_icon"], verify=False, stream=True).raw)
+                        AppLog.log("WeatherApi::runApi():    next img loaded")
+                    except:
+                        forecast["next"]["condition_img"] = None
+                        AppLog.log("WeatherApi::runApi():    next img broken")
+
                 else:
                     AppLog.log(f"WeatherApi::runApi():    Response BAD")
-
-            AppLog.log("WeatherApi::runApi(): processing response")
-            forecast["valid"] = time.time()
-            forecast["location"]["name"] = data["location"]["name"]
-            forecast["now"]["temp_c"] = data["current"]["temp_c"]
-            forecast["now"]["temp_f"] = data["current"]["temp_f"]
-            forecast["now"]["humidity"] = data["current"]["humidity"]
-            forecast["now"]["condition_text"] = data["current"]["condition"]["text"]
-            forecast["now"]["condition_icon"] = f'http:{data["current"]["condition"]["icon"]}'
-            forecast["next"]["mintemp_c"] = data["forecast"]["forecastday"][0]["day"]["mintemp_c"]
-            forecast["next"]["mintemp_f"] = data["forecast"]["forecastday"][0]["day"]["mintemp_f"]
-            forecast["next"]["maxtemp_c"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
-            forecast["next"]["maxtemp_f"] = data["forecast"]["forecastday"][0]["day"]["maxtemp_f"]
-            forecast["next"]["condition_text"] = data["forecast"]["forecastday"][0]["day"]["condition"]["text"]
-            forecast["next"]["condition_icon"] = f'http:{data["forecast"]["forecastday"][0]["day"]["condition"]["icon"]}'
-            AppLog.log("WeatherApi::runApi():    data loaded")
-            try:
-                forecast["now"]["condition_img"] = Image.open(requests.get(
-                    forecast["now"]["condition_icon"], verify=False, stream=True).raw)
-                AppLog.log("WeatherApi::runApi():    current img loaded")
-            except:
-                forecast["now"]["condition_img"] = None
-                AppLog.log("WeatherApi::runApi():    current img broken")
-            try:
-                forecast["next"]["condition_img"] = Image.open(requests.get(
-                    forecast["next"]["condition_icon"], verify=False, stream=True).raw)
-                AppLog.log("WeatherApi::runApi():    next img loaded")
-            except:
-                forecast["next"]["condition_img"] = None
-                AppLog.log("WeatherApi::runApi():    next img broken")
 
             AppLog.log("WeatherApi::runApi(): API completed")
 
